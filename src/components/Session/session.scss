@@ -1,0 +1,57 @@
+.administration {
+  .notes {
+    max-width: 100px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .select {
+    height: 32px !important;
+  }
+  table {
+    thead {
+      background-color: #666;
+      color: #fff;
+      tr {
+        th {
+          white-space: nowrap;
+          font-weight: 300;
+          min-height: 18px;
+          line-height: 18px;
+          border: none;
+          font-size: 12px;
+          background-color: #666;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          color: #fff;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          white-space: nowrap;
+          border: none;
+          text-align: left;
+          color: #333;
+          padding: 14px 10px;
+          overflow: hidden;
+          line-height: 1.6em;
+          vertical-align: middle;
+          font-size: 12px;
+          border-bottom: 1px solid #ccc;
+        }
+      }
+    }
+  }
+}
+.error {
+  color: red;
+}
+.admin-view {
+  table td {
+    padding: 5px 0px 5px 8px;
+    font-size: 13px;
+
+  }
+}

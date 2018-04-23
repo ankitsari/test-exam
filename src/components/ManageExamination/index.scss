@@ -1,0 +1,58 @@
+.manage-exam {
+  table {
+    thead {
+      background-color: #666;
+      color: #fff;
+      tr {
+        th {
+          white-space: nowrap;
+          font-weight: 300;
+          min-height: 18px;
+          line-height: 18px;
+          border: none;
+          font-size: 12px;
+          background-color: #666;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          color: #fff;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          white-space: nowrap;
+          border: none;
+          text-align: left;
+          color: #333;
+          padding: 14px 10px;
+          overflow: hidden;
+          line-height: 1.6em;
+          vertical-align: middle;
+          font-size: 12px;
+          border-bottom: 1px solid #ccc;
+        }
+      }
+    }
+  }
+  .description-width {
+    white-space: normal;
+  }
+  .modal-dialog {
+    .modal-header {
+      background-color:#428bca;
+      color:#fff
+    }
+  }
+  @media (min-width: 576px) {
+    .modal-dialog {
+      max-width: 70%;
+      margin: 1.75rem auto;
+    }
+  }
+  .form-horizontal input.form-control {
+    height: 28px;
+    max-width: 400px;
+    padding: 5px 10px;
+  }
+}

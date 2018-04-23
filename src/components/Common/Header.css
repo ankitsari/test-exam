@@ -1,0 +1,10 @@
+.navbar {
+  background: #133677; }
+  .navbar .navbar-header .navbar-brand {
+    color: white; }
+  .navbar .navbar-nav li a:hover {
+    color: #ffffff; }
+
+.bg-innroad {
+  background-color: #133677;
+  border-color: #c5c5c5; }
