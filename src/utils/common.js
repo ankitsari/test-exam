@@ -1,0 +1,1 @@
+export const  urlDomain = "https://test-exam.herokuapp.com"
