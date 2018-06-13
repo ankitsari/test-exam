@@ -1,5 +1,16 @@
 .manage-exam {
+  .ant-table-thead > tr > th.ant-table-column-sort {
+    background: transparent;
+  }
+  .fade {
+    -webkit-transition: opacity 2s ease-in;
+    -moz-transition: opacity 2s ease-in;
+    -o-transition: opacity 2s ease-in;
+    -ms-transition: opacity 2s ease-in;
+    transition: opacity 2s ease-in;
+  }
   table {
+    border: 1px solid #ddd;
     thead {
       background-color: #666;
       color: #fff;
@@ -15,28 +26,46 @@
           overflow: hidden;
           text-overflow: ellipsis;
           color: #fff;
+          a {
+            cursor: pointer;
+          }
         }
       }
     }
     tbody {
       tr {
         td {
-          white-space: nowrap;
           border: none;
           text-align: left;
           color: #333;
-          padding: 14px 10px;
+          padding: 5px;
           overflow: hidden;
           line-height: 1.6em;
           vertical-align: middle;
           font-size: 12px;
           border-bottom: 1px solid #ccc;
+          .select-input {
+            height: 30px !important;
+            font-size: 13px;
+          }
+          .btn {
+            font-size: 12px;
+          }
         }
       }
     }
   }
   .description-width {
     white-space: normal;
+    display: -webkit-box;
+    max-width: 720px;
+    height: 97.2px;
+    margin: -1px auto;
+    line-height: 1.4;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .modal-dialog {
     .modal-header {
@@ -56,3 +85,4 @@
     padding: 5px 10px;
   }
 }
+

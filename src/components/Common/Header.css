@@ -1,9 +1,18 @@
 .navbar {
-  background: #133677; }
-  .navbar .navbar-header .navbar-brand {
-    color: white; }
-  .navbar .navbar-nav li a:hover {
+  background: #133677 !important;
+  color: #ffffff !important; }
+  .navbar.navbar-light .navbar-brand {
+    color: #ffffff;
+    font-weight: bold; }
+  .navbar .navbar-nav .nav-item .nav-link {
+    color: gray;
+    cursor: pointer; }
+    .navbar .navbar-nav .nav-item .nav-link:hover {
+      color: #ffffff; }
+  .navbar .navbar-nav .nav-item.active {
     color: #ffffff; }
+    .navbar .navbar-nav .nav-item.active .nav-link {
+      color: #ffffff; }
 
 .bg-innroad {
   background-color: #133677;

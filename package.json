@@ -3,17 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "lodash": "^4.17.5",
+    "antd": "^3.6.2",
+    "axios": "^0.18.0",
+    "moment": "^2.22.1",
     "node-sass-chokidar": "^1.2.2",
     "npm-run-all": "^4.1.2",
     "react": "^16.3.2",
     "react-bootstrap4-modal": "^1.2.2",
+    "react-ckeditor-component": "^1.0.7",
+    "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.3.2",
+    "react-ms-login": "^0.1.2",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.4",
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
-    "validator": "^9.4.1"
+    "save": "^2.3.2",
+    "sweetalert": "^2.1.0"
   },
   "scripts": {
     "build-css": "node-sass-chokidar src/ -o src/",
@@ -22,7 +30,11 @@
     "start": "npm-run-all -p watch-css start-js",
     "build-js": "react-scripts build",
     "build": "npm-run-all build-css build-js",
+    "build-dev": "dotenv -e .env.development react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^1.4.0"
   }
 }

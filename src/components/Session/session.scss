@@ -8,7 +8,16 @@
   .select {
     height: 32px !important;
   }
+  .chkUpdateRecords {
+    width: 20px;
+    height: 20px;
+  }
+  .ant-table-thead > tr > th.ant-table-column-sort {
+    background: transparent;
+  }
+
   table {
+    border: 1px solid #ddd;
     thead {
       background-color: #666;
       color: #fff;
@@ -24,26 +33,39 @@
           overflow: hidden;
           text-overflow: ellipsis;
           color: #fff;
+          a {
+            cursor: pointer;
+          }
         }
       }
     }
     tbody {
       tr {
         td {
-          white-space: nowrap;
           border: none;
           text-align: left;
           color: #333;
-          padding: 14px 10px;
+          padding: 14px 5px;
           overflow: hidden;
           line-height: 1.6em;
           vertical-align: middle;
           font-size: 12px;
           border-bottom: 1px solid #ccc;
+          .select-input {
+            height: 30px !important;
+            font-size: 13px;
+          }
+          .btn {
+            font-size: 12px;
+          }
         }
       }
     }
   }
+}
+label {
+  font-weight: 600;
+  color: #333;
 }
 .error {
   color: red;
@@ -54,4 +76,14 @@
     font-size: 13px;
 
   }
+}
+.technical-test {
+  .test-content {
+    max-width: 770px;
+    margin: auto;
+  }
+}
+.token-header {
+  border-bottom: solid 1px #80808057;
+  padding-bottom: 15px;
 }

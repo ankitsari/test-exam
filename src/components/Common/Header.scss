@@ -1,14 +1,24 @@
 .navbar {
-  background: #133677;
-  .navbar-header {
+  background: #133677 !important;
+  color: #ffffff !important;
+  &.navbar-light {
     .navbar-brand {
-      color: white;
+      color: #ffffff;
+      font-weight: bold;
     }
   }
   .navbar-nav {
-    li {
-      a {
+    .nav-item {
+      .nav-link {
+        color: gray;
+        cursor: pointer;
         &:hover {
+          color: #ffffff;
+        }
+      }
+      &.active {
+        color: #ffffff;
+        .nav-link {
           color: #ffffff;
         }
       }
