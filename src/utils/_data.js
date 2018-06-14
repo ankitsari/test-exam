@@ -206,15 +206,15 @@ export async function addStatus(data) {
 }
 
 export async function updateStatus(data) {
-    const url = utils.getURL('/ExamStatusApi/Update');
-    const res = await axios.put(url, data, config)
-    return res.data;
+    // const url = utils.getURL('/ExamStatusApi/Update');
+    // const res = await axios.put(url, data, config)
+    // return res.data;
 }
 
 export async function removeStatus(id) {
-    const url = utils.getURL('/ExamStatusApi/Delete/'+id);
-    const res = await axios.delete(url, config)
-    return res.data;
+    // const url = utils.getURL('/ExamStatusApi/Delete/'+id);
+    // const res = await axios.delete(url, config)
+    // return res.data;
 }
 
 setInterval(async function () {
