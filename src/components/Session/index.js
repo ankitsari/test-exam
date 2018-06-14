@@ -124,48 +124,6 @@ class Session extends Component {
       })
     }
   }
-  sort = (field) => {
-    const {filterList, sortList} = this.state;
-    if(field === 'timeStampTestStart' || field === 'timeStampTestEnd' || field === 'timeStampTimeTaken') {
-      if(sortList === field ) {
-        filterList.sort((a, b) => {
-          return b[field] - a[field];
-        })
-      }else {
-        filterList.sort((a, b) => {
-          return a[field] - b[field];
-        })
-      };
-    }else if (sortList === field) {
-      filterList.sort(function (a, b) {
-        const nameA = a[field] && a[field].toString().toUpperCase();
-        const nameB = b[field] && b[field].toString().toUpperCase();
-        if (nameA > nameB) {
-          return 1;
-        }
-        if (nameA < nameB) {
-          return -1;
-        }
-        return 0;
-      });
-    } else {
-      filterList.sort(function (a, b) {
-        const nameA = a[field] && a[field].toUpperCase();
-        const nameB = b[field] && b[field].toUpperCase();
-        if (nameA < nameB) {
-          return 1;
-        }
-        if (nameA > nameB) {
-          return -1;
-        }
-        return 0;
-      });
-    }
-    this.setState({
-      filterList,
-      sortList: sortList === field ? '' : field,
-    });
-  };
 
   onChange = (e) => {
     const {filterList} = this.state;
@@ -347,10 +305,6 @@ class Session extends Component {
     }
     return (
       <div className="administration">
-        <div className="flex-row mt-3">
-          <h2>Administration</h2>
-        </div>
-        <hr/>
         <div className="d-flex justify-content-end">
           <form className="form-inline">
             { selectedRowKeys.length > 0 ?

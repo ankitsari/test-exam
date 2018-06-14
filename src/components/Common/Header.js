@@ -51,6 +51,9 @@ class Header extends Component {
             <li className={`nav-item ${pathname === '/manage-exam' && 'active' }`}>
               <a className="nav-link" onClick={() => this.onClick('/manage-exam')}>Manage Exam</a>
             </li>
+            <li className={`nav-item ${pathname === '/manage-status' && 'active' }`}>
+              <a className="nav-link" onClick={() => this.onClick('/manage-status')}>Manage Status</a>
+            </li>
           </ul>
           <ul className="navbar-nav mr-0 pull-right">
             <li className={`nav-item`}>

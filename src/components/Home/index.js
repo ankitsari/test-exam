@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import {login, getToken} from "../../utils/_data";
 import { urlDomain } from "../../utils/common"
 
-const callbackUrl = `${urlDomain}/login`;
+//const callbackUrl = `${urlDomain}/login`;
+const callbackUrl = `http://localhost:3000/login`;
 
 class Home extends Component {
   componentWillMount() {

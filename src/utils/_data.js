@@ -14,6 +14,7 @@ axios.interceptors.response.use(function (response) {
     const RefreshToken = window.localStorage.getItem('exam-refreshToken');
     const Email = window.localStorage.getItem('exam-email');
     const url = utils.getURL('/AccountApi/RefreshToken');
+    debugger
     return axios.post(url, {Email, RefreshToken})
       .then(({data}) => {
         if (!data) {

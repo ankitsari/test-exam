@@ -1,13 +1,27 @@
 .manage-exam {
+  .description-width {
+    white-space: normal;
+    display: -webkit-box;
+    max-width: 720px;
+    height: 97.2px;
+    margin: -1px auto;
+    line-height: 1.4;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .form-horizontal input.form-control {
+    height: 28px;
+    max-width: 400px;
+    padding: 5px 10px;
+  }
+}
+
+.manage-exam, .manage-status {
   .ant-table-thead > tr > th.ant-table-column-sort {
     background: transparent;
-  }
-  .fade {
-    -webkit-transition: opacity 2s ease-in;
-    -moz-transition: opacity 2s ease-in;
-    -o-transition: opacity 2s ease-in;
-    -ms-transition: opacity 2s ease-in;
-    transition: opacity 2s ease-in;
   }
   table {
     border: 1px solid #ddd;
@@ -55,34 +69,4 @@
       }
     }
   }
-  .description-width {
-    white-space: normal;
-    display: -webkit-box;
-    max-width: 720px;
-    height: 97.2px;
-    margin: -1px auto;
-    line-height: 1.4;
-    -webkit-line-clamp: 5;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .modal-dialog {
-    .modal-header {
-      background-color:#428bca;
-      color:#fff
-    }
-  }
-  @media (min-width: 576px) {
-    .modal-dialog {
-      max-width: 70%;
-      margin: 1.75rem auto;
-    }
-  }
-  .form-horizontal input.form-control {
-    height: 28px;
-    max-width: 400px;
-    padding: 5px 10px;
-  }
 }
-

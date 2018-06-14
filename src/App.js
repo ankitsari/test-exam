@@ -6,6 +6,7 @@ import Session from './components/Session';
 import Create from './components/Session/action/Create';
 import Edit from './components/Session/action/Edit';
 import ManageExamination from './components/ManageExamination';
+import ManageStatus from './components/ManageStatus';
 import View from './components/Session/action/View';
 import TakeTest from './components/Session/test/TakeTest';
 import TechnicalTest from './components/Session/test/TechnicalTest';
@@ -32,17 +33,24 @@ class App extends Component {
         <div className="container">
           {
             localStorage.getItem('exam-token') ?
-              <Switch>
-                <Route exact path="/session/create" component={Create}/>
-                <Route exact path="/session/edit/:id" component={Edit}/>
-                <Route exact path="/session/view/:testId" component={View}/>
-                <Route exact path="/ValidateToken/:token" component={TakeTest}/>
-                <Route exact path="/TechnicalTest/TestStart" component={TechnicalTest}/>
-                <Route exact path="/manage-exam" component={ManageExamination}/>
-                <Route exact path="/manage-exam/edit/:testId" component={ManageExamination}/>
-                <Route path="/" component={Session}/>
-                <Route path="*" render={() => <Redirect to="/"/>}/>
-              </Switch>
+              <div>
+                <div className="flex-row mt-3">
+                  <h2>Administration</h2>
+                </div>
+                <hr/>
+                <Switch>
+                  <Route exact path="/session/create" component={Create}/>
+                  <Route exact path="/session/edit/:id" component={Edit}/>
+                  <Route exact path="/session/view/:testId" component={View}/>
+                  <Route exact path="/ValidateToken/:token" component={TakeTest}/>
+                  <Route exact path="/TechnicalTest/TestStart" component={TechnicalTest}/>
+                  <Route exact path="/manage-exam" component={ManageExamination}/>
+                  <Route exact path="/manage-status" component={ManageStatus}/>
+                  <Route exact path="/manage-exam/edit/:testId" component={ManageExamination}/>
+                  <Route path="/" component={Session}/>
+                  <Route path="*" render={() => <Redirect to="/"/>}/>
+                </Switch>
+              </div>
               :
               <Switch>
                 <Route exact path="/login" component={Home}/>

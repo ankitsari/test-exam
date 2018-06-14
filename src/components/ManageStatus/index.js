@@ -3,10 +3,10 @@ import {connect} from 'react-redux';
 import swal from 'sweetalert';
 import { Table } from 'antd'
 import {getManageExamsList} from '../../Redux/actions/index'
-import {deleteExamsById, editExamById, createExams, updateExam} from "../../utils/_data";
-import ExamModal from './components/ExamModal'
+import {deleteExamsById, editExamById, createExams, updateExam, getExamStatusList} from "../../utils/_data";
+import ExamStatusModal from './components/ExamStatusModal'
 import Loader from '../Common/Loader'
-import './index.css'
+import '../ManageExamination/index.css'
 import 'antd/dist/antd.css'
 
 const mapStateToProps = state => ({
@@ -17,22 +17,17 @@ const mapDispatchToProps = dispatch => ({
   fetchExams: dispatch(getManageExamsList),
 });
 
-class ManageExam extends Component {
+class ManageStatus extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: true,
       isModal: false,
-      testTitle: '',
-      isAttachmentRequired: false,
-      questions: [{
-        name: ''
-      }],
+      name: '',
       errors: {
-        testTitle: '',
-        questions: '',
+        name: '',
       },
-      examsList: [],
+      examStatusList: [],
       sortedInfo: {
         order: 'descend',
         columnKey: '',
@@ -42,25 +37,26 @@ class ManageExam extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchExams()
+    this.getExamStatus()
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.examsList) {
-      const examsList = nextProps.examsList.map(x => {
-        x.key = x.testId
+  getExamStatus = () => {
+    getExamStatusList().then(res => {
+      const examStatusList = res ? res.map(x => {
+        x.key = x.id
         return x
-      })
+      }) : []
       this.setState({
-        examsList,
-        loading: false
+        examStatusList,
+        loading: false,
       })
-    }
+    }).catch(err => {
+    })
   }
 
-  removeExam = (TestId) => {
+  removeExam = (statusId) => {
     const {examsList} = this.state;
-    if (TestId) {
+    if (statusId) {
       swal({
         title: "Are you sure?",
         text: "Once deleted, you will not be able to recover this exam details",
@@ -69,8 +65,8 @@ class ManageExam extends Component {
         dangerMode: true,
       }).then((status) => {
         if (status) {
-          deleteExamsById(TestId).then(() => {
-            let index = examsList.findIndex(x => x.testId === TestId);
+          deleteExamsById(statusId).then(() => {
+            let index = examsList.findIndex(x => x.statusId === statusId);
             examsList.splice(index, 1);
             this.setState({
               examsList
@@ -87,29 +83,23 @@ class ManageExam extends Component {
     }
   };
 
-  handleModal = (exam) => {
-    if (exam && exam.testId) {
+  handleModal = (status) => {
+    if (status && status.id) {
       this.setState({
         loading: true
       }, () => {
-        editExamById(exam.testId).then(res => {
-          this.setState({
-            ...res,
-            isModal: !this.state.isModal,
-            loading: false
-          });
-        }).catch(err => {
+        this.setState({
+          name: status.name,
+          statusId: status.id,
+          isModal: !this.state.isModal,
+          loading: false
         });
       })
     } else {
       this.setState({
         isModal: !this.state.isModal,
-        testId: '',
-        testTitle: '',
-        isAttachmentRequired: false,
-        questions: [{
-          name: ''
-        }],
+        statusId: '',
+        name: '',
         errors:{}
       });
     }
@@ -121,31 +111,11 @@ class ManageExam extends Component {
     })
   };
 
-  isChecked = (e) => {
-    this.setState({
-        isAttachmentRequired: e.target.checked,
-    })
-  };
-
-  onQuestion = (e, i) => {
-    const {questions} = this.state;
-    questions[i].name = e.editor.getData();
-    this.setState({
-        questions,
-    })
-  };
-
   validate = (name, value) => {
     switch (name) {
       case 'testTitle':
         if (!value) {
           return 'TestTitle is Required';
-        } else {
-          return '';
-        }
-      case 'questions':
-        if (!value) {
-          return ' field is required';
         } else {
           return '';
         }
@@ -226,27 +196,7 @@ class ManageExam extends Component {
         }],
     });
     this.handleModal()
-  };
-
-  addQuestion = () => {
-      const {questions} = this.state;
-      const inserted = {
-        name: '',
-        isNew: true,
-      };
-      questions.push(inserted);
-      this.setState({
-          questions
-      })
-  };
-
-  removeQuestion = () => {
-      const {questions} = this.state;
-      questions.pop();
-      this.setState({
-          questions
-      })
-  };
+  }
 
   handleSortChange = (pagination, filters, sorter) => {
     this.setState({
@@ -256,23 +206,23 @@ class ManageExam extends Component {
   }
 
   render() {
-    const {examsList} = this.state;
+    const {examStatusList} = this.state;
     let {sortedInfo} = this.state;
     sortedInfo = sortedInfo || {};
     const columns = [
       {
         title: 'Name',
-        dataIndex: 'testTitle',
-        sorter: (a, b) => a.testTitle.toLowerCase().localeCompare(b.testTitle.toLowerCase()),
-        sortOrder: sortedInfo.columnKey === 'testTitle' && sortedInfo.order,
+        dataIndex: 'name',
+        sorter: (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+        sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
       },
       {
         title: 'Action',
         dataIndex: '',
-        render: (text, exam) =>
+        render: (text, status) =>
           <div className="form-inline">
-            <button className="btn btn-danger btn-sm mr-1 " onClick={() => this.removeExam(exam.testId)}>Delete</button>
-            <button className="btn btn-blue btn-sm " onClick={() => this.handleModal(exam)}>Edit</button>
+            <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeExam(status.id)}>Delete</button>
+            <button className="btn btn-blue btn-sm" onClick={() => this.handleModal(status)}>Edit</button>
           </div>
       },
     ];
@@ -284,19 +234,18 @@ class ManageExam extends Component {
       return loading
     }
     return (
-      <div className="manage-exam">
-        <div className="row col-sm-12 col-md-12 col-xs-12">
+      <div className="manage-status">
+        <div className="row col-sm-8 col-md-8 col-sm-offset-2 col-md-offset-2 col-xs-12">
           <div className='col-sm-12 text-right'>
-              <button className="btn btn-blue mb-2" onClick={() => this.handleModal()}>Create New Test</button>
+            <button className="btn btn-blue mb-2" onClick={() => this.handleModal()}>Create New Status</button>
           </div>
           <div className="col-sm-12 col-md-12 col-xs-12">
-            <Table columns={columns} dataSource={examsList} onChange={this.handleSortChange}/>
+            <Table columns={columns} dataSource={examStatusList} onChange={this.handleSortChange}/>
           </div>
         </div>
-        <ExamModal
+        <ExamStatusModal
           handleModal={this.handleModal}
           onChange={this.onChange}
-          isChecked={this.isChecked}
           state={this.state}
           removeQuestion={this.removeQuestion}
           addQuestion={this.addQuestion}
@@ -308,4 +257,4 @@ class ManageExam extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ManageExam);
+export default connect(mapStateToProps, mapDispatchToProps)(ManageStatus);
