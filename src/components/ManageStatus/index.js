@@ -1,33 +1,35 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import swal from 'sweetalert';
+import {bindActionCreators} from 'redux';
 import { Table } from 'antd'
-import {getManageExamsList} from '../../Redux/actions/index'
-import {deleteExamsById, editExamById, createExams, updateExam, getExamStatusList} from "../../utils/_data";
-import ExamStatusModal from './components/ExamStatusModal'
+import {getAllStatusList,createStatus,editStatus,deleteStatus} from '../../Redux/actions'
+import StatusModal from './components/StatusModal'
 import Loader from '../Common/Loader'
 import '../ManageExamination/index.css'
 import 'antd/dist/antd.css'
 
 const mapStateToProps = state => ({
-  examsList: state.exams && state.exams.exams,
+  statusList: state.status.status,
+  loading: state.loading
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchExams: dispatch(getManageExamsList),
+    fetchStatus: bindActionCreators(getAllStatusList,dispatch),
+    createStatus: bindActionCreators(createStatus,dispatch),
+    editStatus: bindActionCreators(editStatus,dispatch),
+    deleteStatus: bindActionCreators(deleteStatus,dispatch)
 });
 
 class ManageStatus extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
+      loading:true,
       isModal: false,
       name: '',
-      errors: {
-        name: '',
-      },
-      examStatusList: [],
+      error: '',
+      statusList: [],
       sortedInfo: {
         order: 'descend',
         columnKey: '',
@@ -37,47 +39,21 @@ class ManageStatus extends Component {
   }
 
   componentWillMount() {
-    this.getExamStatus()
-  }
-
-  getExamStatus = () => {
-    getExamStatusList().then(res => {
-      const examStatusList = res ? res.map(x => {
-        x.key = x.id
-        return x
-      }) : []
-      this.setState({
-        examStatusList,
-        loading: false,
-      })
-    }).catch(err => {
-    })
+      this.props.fetchStatus();
   }
 
   removeExam = (statusId) => {
-    const {examsList} = this.state;
+    const {statusList} = this.state;
     if (statusId) {
       swal({
         title: "Are you sure?",
-        text: "Once deleted, you will not be able to recover this exam details",
+        text: "Once deleted, you will not be able to recover this status",
         icon: "warning",
         buttons: true,
         dangerMode: true,
       }).then((status) => {
         if (status) {
-          deleteExamsById(statusId).then(() => {
-            let index = examsList.findIndex(x => x.statusId === statusId);
-            examsList.splice(index, 1);
-            this.setState({
-              examsList
-            });
-            swal("Your exam details has been deleted!", {
-              icon: "success",
-            });
-          }).catch((err) => {
-            console.log(err)
-          })
-
+          this.props.deleteStatus(statusId,statusList);
         }
       });
     }
@@ -100,7 +76,7 @@ class ManageStatus extends Component {
         isModal: !this.state.isModal,
         statusId: '',
         name: '',
-        errors:{}
+        error:''
       });
     }
   };
@@ -113,9 +89,9 @@ class ManageStatus extends Component {
 
   validate = (name, value) => {
     switch (name) {
-      case 'testTitle':
+      case 'name':
         if (!value) {
-          return 'TestTitle is Required';
+          return 'Status Title is Required';
         } else {
           return '';
         }
@@ -125,77 +101,21 @@ class ManageStatus extends Component {
     }
   };
 
-  saveExam = () => {
-    const {testId, testTitle, isAttachmentRequired, questions, examsList} = this.state;
-    let fields = {
-      testTitle,
-      questions,
-    };
-
-    let validationErrors = {};
-    Object.keys(fields).forEach((name) => {
-      if (name === "questions") {
-        const err = [];
-          questions.forEach((item, index) => {
-          const error = this.validate(name, item.name);
-          if (error && error.length > 0) {
-            let questionError = {
-              [index]: error,
-            };
-            err.push(questionError);
-            validationErrors[name] = err;
-          }
-        });
-      } else {
-        const error = this.validate(name, fields[name]);
-        if (error && error.length > 0) {
-          validationErrors[name] = error;
-        }
-      }
-    });
-
-    if (Object.keys(validationErrors).length > 0) {
-      this.setState({errors: validationErrors});
-      return;
+  saveStatus = () => {
+    const {statusId, name,statusList} = this.state;
+    let err = this.validate('name',name);
+    if(err){
+      this.setState({error:err});
+      return
     }
-
-    let data = {
-        testTitle,
-        isAttachmentRequired,
-        questions,
-    };
-
-    if (testId) {
-      data.testId = testId;
-      updateExam(data).then(() => {
-        let index = examsList.findIndex(x => x.testId === testId);
-        examsList[index] = data;
-        this.setState({
-          examsList
-        })
-      }).catch((err) => {
-        console.log(err)
-      });
-    } else {
-      createExams(data).then((res) => {
-        const mergeData = Object.assign(data, res);
-        examsList.push(mergeData);
-        this.setState({
-          examsList
-        })
-      }).catch((err) => {
-        console.log(err)
-      });
+    const data = { Name: name }
+    if(statusId){
+      data.Id = statusId
+      this.props.editStatus(data,statusList);
+    }else {
+        this.props.createStatus(data);
     }
-    this.setState({
-        testId: '',
-        testTitle: '',
-        isAttachmentRequired: false,
-        questions: [{
-          name: ''
-        }],
-    });
-    this.handleModal()
+    this.handleModal();
   }
 
   handleSortChange = (pagination, filters, sorter) => {
@@ -205,8 +125,12 @@ class ManageStatus extends Component {
     });
   }
 
+  componentWillReceiveProps(nextProps){
+    this.setState({statusList:nextProps.statusList,loading:nextProps.loading});
+  }
+
   render() {
-    const {examStatusList} = this.state;
+    const {statusList,loading} = this.state;
     let {sortedInfo} = this.state;
     sortedInfo = sortedInfo || {};
     const columns = [
@@ -226,13 +150,11 @@ class ManageStatus extends Component {
           </div>
       },
     ];
-    const loading = (
-      <Loader/>
-    );
 
-    if (this.state.loading) {
-      return loading
-    }
+    if (loading)
+      return(
+        <Loader/>
+      )
     return (
       <div className="manage-status">
         <div className="row col-sm-8 col-md-8 col-sm-offset-2 col-md-offset-2 col-xs-12">
@@ -240,17 +162,14 @@ class ManageStatus extends Component {
             <button className="btn btn-blue mb-2" onClick={() => this.handleModal()}>Create New Status</button>
           </div>
           <div className="col-sm-12 col-md-12 col-xs-12">
-            <Table columns={columns} dataSource={examStatusList} onChange={this.handleSortChange}/>
+            <Table columns={columns} dataSource={statusList} onChange={this.handleSortChange}/>
           </div>
         </div>
-        <ExamStatusModal
+        <StatusModal
           handleModal={this.handleModal}
           onChange={this.onChange}
           state={this.state}
-          removeQuestion={this.removeQuestion}
-          addQuestion={this.addQuestion}
-          onQuestion={this.onQuestion}
-          saveExam={this.saveExam}
+          saveStatus={this.saveStatus}
         />
       </div>
     );

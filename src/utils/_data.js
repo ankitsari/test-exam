@@ -14,7 +14,6 @@ axios.interceptors.response.use(function (response) {
     const RefreshToken = window.localStorage.getItem('exam-refreshToken');
     const Email = window.localStorage.getItem('exam-email');
     const url = utils.getURL('/AccountApi/RefreshToken');
-    debugger
     return axios.post(url, {Email, RefreshToken})
       .then(({data}) => {
         if (!data) {
@@ -192,6 +191,30 @@ export async function refreshToken() {
       window.localStorage.setItem('exam-token', data.token);
       window.localStorage.setItem('exam-refreshToken', data.refreshToken);
     });
+}
+
+export async function getStatusList() {
+    const url = utils.getURL(`/ExamStatusApi/StatusList`);
+    const res = await axios.get(url, config)
+    return res.data;
+}
+
+export async function addStatus(data) {
+    const url = utils.getURL('/ExamStatusApi/Save');
+    const res = await axios.post(url, data, config)
+    return res.data;
+}
+
+export async function updateStatus(data) {
+    const url = utils.getURL('/ExamStatusApi/Update');
+    const res = await axios.put(url, data, config)
+    return res.data;
+}
+
+export async function removeStatus(id) {
+    const url = utils.getURL('/ExamStatusApi/Delete/'+id);
+    const res = await axios.delete(url, config)
+    return res.data;
 }
 
 setInterval(async function () {

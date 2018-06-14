@@ -15,4 +15,9 @@
 
 .modal-dialog .modal-header {
   background-color: #428bca;
-  color: #fff; }
+  color: #fff;
+  display: unset;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important; }
+  .modal-dialog .modal-header .close {
+    margin-top: -7px; }
