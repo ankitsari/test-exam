@@ -7,3 +7,5 @@ export const SET_STATUS_LIST ='SET_STATUS_LIST';
 export const ADD_STATUS = 'ADD_STATUS';
 export const EDIT_STATUS = 'EDIT_STATUS';
 export const DELETE_STATUS = 'DELETE_STATUS';
+
+export const SET_ERROR = 'SET_ERROR';

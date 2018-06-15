@@ -70,8 +70,8 @@ export async function getUserInfo(data) {
 
 export async function getSourceList() {
   const url = utils.getURL(`/CommonApi/SourceList`);
-  const res = await axios.get(url, config)
-  return res.data;
+  let res = await axios.get(url, config)
+  return res
 }
 
 export async function getExamStatusList() {
@@ -91,7 +91,7 @@ export async function getAllExamsList() {
 export async function getExamsList() {
   const url = utils.getURL('/ManageExamApi/ExamList');
   const res = await axios.get(url, config)
-  return res.data;
+  return res
 }
 
 export async function deleteExamsById(TestId) {
@@ -124,7 +124,7 @@ export async function updateExam(data) {
 export async function getTestsList() {
   const url = utils.getURL('/CreateSessionApi/TestList');
   const res = await axios.get(url, config)
-  return res.data;
+  return res
 }
 
 export async function getTestById(testId) {
@@ -177,6 +177,19 @@ export async function submitTechnicalTest(data) {
   return res.data;
 }
 
+export async function updateStatusMultiple(data) {
+    // const url = utils.getURL(`/CreateSessionApi/UpdateStatusForMultiple`);
+    // const res = await axios.post(url, data, config)
+    // return res.data;
+    return {isSuccess: true};
+}
+
+export async function multipleDelete(data) {
+    const url = utils.getURL(`/CreateSessionApi/DeleteMultiple`);
+    const res = await axios.post(url, data, config)
+    return res.data;
+}
+
 export async function refreshToken() {
   const RefreshToken = window.localStorage.getItem('exam-refreshToken');
   const Email = window.localStorage.getItem('exam-email');
@@ -196,7 +209,7 @@ export async function refreshToken() {
 export async function getStatusList() {
     const url = utils.getURL(`/ExamStatusApi/StatusList`);
     const res = await axios.get(url, config)
-    return res.data;
+    return res
 }
 
 export async function addStatus(data) {

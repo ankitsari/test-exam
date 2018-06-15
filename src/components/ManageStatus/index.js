@@ -11,7 +11,8 @@ import 'antd/dist/antd.css'
 
 const mapStateToProps = state => ({
   statusList: state.status.status,
-  loading: state.loading
+  loading: state.loading,
+  errorMsg : state.tests && state.tests.error
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -162,6 +163,7 @@ class ManageStatus extends Component {
             <button className="btn btn-blue mb-2" onClick={() => this.handleModal()}>Create New Status</button>
           </div>
           <div className="col-sm-12 col-md-12 col-xs-12">
+            <span style={{color:"red"}}>{this.props.errorMsg.getStatusListError}</span>
             <Table columns={columns} dataSource={statusList} onChange={this.handleSortChange}/>
           </div>
         </div>

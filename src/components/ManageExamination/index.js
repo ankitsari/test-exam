@@ -10,6 +10,7 @@ import './index.css'
 import 'antd/dist/antd.css'
 
 const mapStateToProps = state => ({
+  errorMsg : state.tests && state.tests.error,
   examsList: state.exams && state.exams.exams,
 });
 
@@ -276,6 +277,7 @@ class ManageExam extends Component {
           </div>
       },
     ];
+
     const loading = (
       <Loader/>
     );
@@ -290,6 +292,7 @@ class ManageExam extends Component {
               <button className="btn btn-blue mb-2" onClick={() => this.handleModal()}>Create New Test</button>
           </div>
           <div className="col-sm-12 col-md-12 col-xs-12">
+            <span style={{color:"red"}}>{this.props.errorMsg.ExamsListError}</span>
             <Table columns={columns} dataSource={examsList} onChange={this.handleSortChange}/>
           </div>
         </div>
