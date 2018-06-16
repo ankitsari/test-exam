@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {login, getToken} from "../../utils/_data";
+import { notification } from "antd";
 import { urlDomain } from "../../utils/common"
+
 
 //const callbackUrl = `${urlDomain}/login`;
 const callbackUrl = `http://localhost:3000/login`;
@@ -19,6 +21,10 @@ class Home extends Component {
         localStorage.setItem('exam-user', JSON.stringify(res));
         window.location.href = '/';
       }).catch(err => {
+          notification.error({
+              message: 'Something going wrong. please contact to administrator.',
+              placement: 'topRight',
+          })
         console.log(err)
       });
     }
@@ -27,7 +33,13 @@ class Home extends Component {
   loginOffice365 = () => {
     login(callbackUrl).then(res => {
       window.location.href = res;
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        notification.error({
+            message: 'Something going wrong. please contact to administrator.',
+            placement: 'topRight',
+        })
+        console.log(err)
+    });
   };
 
   render() {
