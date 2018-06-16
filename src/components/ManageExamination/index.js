@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import swal from 'sweetalert';
-import { Table } from 'antd'
+import {Table, notification} from 'antd'
 import {getManageExamsList} from '../../Redux/actions/index'
-import {deleteExamsById, editExamById, createExams, updateExam} from "../../utils/_data";
+import {deleteExamsById, editExamById, createExams, updateExam, getExamsList} from "../../utils/_data";
 import ExamModal from './components/ExamModal'
 import Loader from '../Common/Loader'
 import './index.css'
@@ -42,22 +42,52 @@ class ManageExam extends Component {
     }
   }
 
-  componentWillMount() {
-    this.props.fetchExams()
+  async componentWillMount() {
+      try {
+        const data = await getExamsList();
+          const examsList = data && data.map(x => {
+              x.key = x.testId;
+              return x
+          });
+          this.setState({
+              examsList: examsList || [],
+              loading: false,
+          })
+      } catch(er) {
+          this.notifyError(er)
+          this.setState({
+              examsList: [{testTitle: 'test', key: 1, testId: 1}],
+              loading: false,
+          });
+      }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.examsList) {
-      const examsList = nextProps.examsList.map(x => {
-        x.key = x.testId
-        return x
+  notifyError = (err) => {
+      notification.error({
+          message: err.message || 'Please try again.',
+          placement: 'topRight',
       })
-      this.setState({
-        examsList,
-        loading: false
-      })
-    }
   }
+
+  notifySuccess = (message) => {
+        notification.success({
+            message: message,
+            placement: 'topRight',
+        })
+    }
+
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.examsList) {
+  //     const examsList = nextProps.examsList.map(x => {
+  //       x.key = x.testId
+  //       return x
+  //     })
+  //     this.setState({
+  //       examsList,
+  //       loading: false
+  //     })
+  //   }
+  // }
 
   removeExam = (TestId) => {
     const {examsList} = this.state;
@@ -79,8 +109,9 @@ class ManageExam extends Component {
             swal("Your exam details has been deleted!", {
               icon: "success",
             });
+              this.notifySuccess("Your exam details has been deleted!")
           }).catch((err) => {
-            console.log(err)
+              this.notifyError(err)
           })
 
         }
@@ -99,7 +130,11 @@ class ManageExam extends Component {
             isModal: !this.state.isModal,
             loading: false
           });
-        }).catch(err => {
+        }).catch(er => {
+            this.notifyError(er);
+            this.setState({
+                loading: false,
+            })
         });
       })
     } else {
@@ -204,8 +239,10 @@ class ManageExam extends Component {
         this.setState({
           examsList
         })
-      }).catch((err) => {
-        console.log(err)
+          this.notifySuccess("Your exam details has been updated!")
+      }).catch((er) => {
+          this.notifyError(er)
+        console.log(er)
       });
     } else {
       createExams(data).then((res) => {
@@ -214,8 +251,10 @@ class ManageExam extends Component {
         this.setState({
           examsList
         })
-      }).catch((err) => {
-        console.log(err)
+          this.notifySuccess("Your exam details has been created!")
+      }).catch((er) => {
+          this.notifyError(er)
+        console.log(er)
       });
     }
     this.setState({
@@ -270,8 +309,9 @@ class ManageExam extends Component {
       {
         title: 'Action',
         dataIndex: '',
+          className: 'text-right',
         render: (text, exam) =>
-          <div className="form-inline">
+          <div className="form-inline pull-right">
             <button className="btn btn-danger btn-sm mr-1 " onClick={() => this.removeExam(exam.testId)}>Delete</button>
             <button className="btn btn-blue btn-sm " onClick={() => this.handleModal(exam)}>Edit</button>
           </div>
