@@ -5,6 +5,7 @@ import { createSession, updateSession } from '../../../utils/_data';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import SourceInput from '../../Common/SourceInput'
 import CKEditor from "react-ckeditor-component";
+import {notification} from 'antd'
 
 class AbstractForm extends Component {
   constructor(props) {
@@ -44,6 +45,13 @@ class AbstractForm extends Component {
       })
     }
   }
+
+    notifyError = (err) => {
+        notification.error({
+            message: err.message || 'Please try again.',
+            placement: 'topRight',
+        })
+    }
 
   componentDidMount() {
     const props = this.props;
@@ -149,6 +157,7 @@ class AbstractForm extends Component {
     }
     if (this.props.testId) {
       updateSession(fields).then((res) => {
+
         swal("Record updated successfully", {
           icon: "success",
         }).then((msg) => {
@@ -159,6 +168,7 @@ class AbstractForm extends Component {
           }
         });
       }).catch((err) => {
+        this.notifyError(err);
         console.log(err)
       })
     } else {
@@ -171,6 +181,7 @@ class AbstractForm extends Component {
           })
         });
       }).catch((err) => {
+        this.notifyError(err);
         console.log(err)
       })
     }
