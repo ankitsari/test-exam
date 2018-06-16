@@ -4,10 +4,8 @@ import utils from './index'
 axios.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
-
   const originalRequest = error.config;
-
-  if (error.response.status === 401 && !originalRequest._retry) {
+  if (error.response && error.response.status === 401 && !originalRequest._retry) {
 
     originalRequest._retry = true;
 

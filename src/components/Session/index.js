@@ -3,14 +3,16 @@ import {Link} from 'react-router-dom'
 import swal from 'sweetalert'
 import {connect} from 'react-redux'
 import moment from 'moment'
-import {Table} from 'antd'
-import {getSessionTestsList, getSourcesList} from '../../Redux/actions/index'
+import {Table, notification} from 'antd'
+import {getSessionTestsList, getSourcesList, } from '../../Redux/actions/index'
 import {
     getExamStatusList,
     deleteSession,
     deleteExamsById,
     updateStatusMultiple,
-    multipleDelete
+    multipleDelete,
+    getTestsList,
+    getSourceList,
 } from "../../utils/_data";
 import SourceInput from '../Common/SourceInput'
 import Loader from '../Common/Loader'
@@ -390,56 +392,65 @@ class Session extends Component {
                         marginRight: -221,
                         color: "red"
                     }}>{this.props.errorMsg.sourceError}</div>
-                    <form className="form-inline">
-                        {selectedRowKeys.length > 0 ?
-                            <div>
-                                <a className="btn btn-blue mb-2" onClick={this.onMultipleDelete}>Delete Selected</a>
-                                <select className="form-control mb-2 ml-2 mr-sm-2 select-filter pointer select"
-                                        name="ddlStatusForAll" onChange={this.onChange}>
-                                    <option value="">Update Status for all Selected</option>
-                                    {
-                                        examStatusList && examStatusList.length && examStatusList.map((source) => (
-                                            <option key={source.id} value={source.id.toString()}>{source.name}</option>
-                                        ))
-                                    }
-                                </select>
-                            </div>
-                            : null
-                        }
+                    <div className="panel panel-default">
+                        <div className="panel-heading"><b>configure</b>
+                            <Link to={'/session/create'} style={{float: 'right'}} className="btn btn-blue mb-2">Create new Test Session</Link>
+                        </div>
+                        <div className="panel-body">
+                            <form className="form-inline">
+                                {selectedRowKeys.length == 0 ?
+                                    <div>
+                                        <a className="btn btn-blue mb-2" onClick={this.onMultipleDelete}>Delete Selected</a>
+                                        <select className="form-control mb-2 ml-2 mr-sm-2 select-filter pointer select"
+                                                name="ddlStatusForAll" onChange={this.onChange}>
+                                            <option value="">Update Status for all Selected</option>
+                                            {
+                                                examStatusList && examStatusList.length && examStatusList.map((source) => (
+                                                    <option key={source.id} value={source.id.toString()}>{source.name}</option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
+                                    : null
+                                }
 
-                        <label htmlFor="inlineFormInputName2">Source:</label>
-                        <div className="form-group">
-                            <SourceInput className="form-control mb-2 ml-2 mr-sm-2 select-filter pointer select"
-                                         onChange={this.onFilterChange}
-                                         value={where.sourceId}
-                                         sources={this.props.sources}
-                                         name="sourceId"
-                                         examStatusError={this.state.examStatusError}
-                            />
-                        </div>
+                                <label htmlFor="inlineFormInputName2">Source:</label>
+                                <div className="form-group">
+                                    <SourceInput className="form-control mb-2 ml-2 mr-sm-2 select-filter pointer select"
+                                                 onChange={this.onFilterChange}
+                                                 value={where.sourceId}
+                                                 sources={this.props.sources}
+                                                 name="sourceId"
+                                                 examStatusError={this.state.examStatusError}
+                                    />
+                                </div>
 
-                        <div className="form-check mb-2 mr-sm-2">
-                            <input type="checkbox"
-                                   name="hideFail"
-                                   checked={where.hideFail}
-                                   onChange={this.onFilterChange}
-                                   className="form-check-input pointer"/>
-                            <label className="form-check-label">
-                                Hide Fail
-                            </label>
+                                <div className="form-check mb-2 mr-sm-2">
+                                    <input type="checkbox"
+                                           name="hideFail"
+                                           checked={where.hideFail}
+                                           onChange={this.onFilterChange}
+                                           className="form-check-input pointer"/>
+                                    <label className="form-check-label">
+                                        Hide Fail
+                                    </label>
+                                </div>
+                                <div className="form-check mb-2 mr-sm-2">
+                                    <input type="checkbox"
+                                           name="hideHired"
+                                           checked={where.hideHired}
+                                           onChange={this.onFilterChange}
+                                           className="form-check-input pointer"/>
+                                    <label className="form-check-label">
+                                        Hide Hired
+                                    </label>
+                                </div>
+                            </form>
                         </div>
-                        <div className="form-check mb-2 mr-sm-2">
-                            <input type="checkbox"
-                                   name="hideHired"
-                                   checked={where.hideHired}
-                                   onChange={this.onFilterChange}
-                                   className="form-check-input pointer"/>
-                            <label className="form-check-label">
-                                Hide Hired
-                            </label>
-                        </div>
-                        <Link to={'/session/create'} className="btn btn-blue mb-2">Create new Test Session</Link>
-                    </form>
+                    </div>
+
+
+
                 </div>
                 <div className="clear"/>
                 <span style={{color: "red"}}>{this.props.errorMsg.sessionTestsError}</span>
