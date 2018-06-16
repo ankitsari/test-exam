@@ -357,48 +357,30 @@ class Session extends Component {
                     <div className="form-inline">
                         <Link to={{pathname: `/session/view/${exam.id}`, state: {testId: exam.id}}}
                               className="btn btn-blue mr-1">View</Link>
-                        <button className="btn btn-danger btn-sm mr-1" onClick={() => this.onDelete(exam.id)}>Delete
-                        </button>
+
                         <Link to={{pathname: `/session/edit/${exam.id}`, state: {testId: exam.id}}}
-                              className="btn btn-blue btn-sm">Edit</Link>
+                              className="btn btn-blue btn-sm mr-1">Edit</Link>
+                        <button className="btn btn-danger btn-sm" onClick={() => this.onDelete(exam.id)}>Delete
+                        </button>
                     </div>
             },
         ];
 
-        if (this.props.errorMsg) {
-            const loading = (
-                this.props.errorMsg.sessionTestsError ?
-                    <p style={{color: "red"}}> {this.props.errorMsg.sessionTestsError}</p> : <Loader/>
-            );
-            if (this.state.loading) {
-                return loading
-            }
-        }
-
-        const loading = (
-            <Loader/>
-        );
-
         if (this.state.loading) {
-            return loading
+            return  <Loader/>
         }
 
         return (
 
             <div className="administration">
                 <div className="d-flex justify-content-end">
-                    <div style={{
-                        marginTop: -20,
-                        marginRight: -221,
-                        color: "red"
-                    }}>{this.props.errorMsg.sourceError}</div>
                     <div className="panel panel-default">
                         <div className="panel-heading"><b>configure</b>
                             <Link to={'/session/create'} style={{float: 'right'}} className="btn btn-blue mb-2">Create new Test Session</Link>
                         </div>
                         <div className="panel-body">
                             <form className="form-inline">
-                                {selectedRowKeys.length == 0 ?
+                                {selectedRowKeys.length > 0 ?
                                     <div>
                                         <a className="btn btn-blue mb-2" onClick={this.onMultipleDelete}>Delete Selected</a>
                                         <select className="form-control mb-2 ml-2 mr-sm-2 select-filter pointer select"
@@ -453,7 +435,7 @@ class Session extends Component {
 
                 </div>
                 <div className="clear"/>
-                <span style={{color: "red"}}>{this.props.errorMsg.sessionTestsError}</span>
+                {/*<span style={{color: "red"}}>{this.props.errorMsg.sessionTestsError}</span>*/}
                 <Table rowSelection={rowSelection} columns={columns} dataSource={filterList}
                        onChange={this.handleSortChange}/>
             </div>

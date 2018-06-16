@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {getTestById} from "../../../utils/_data";
 import Loader from '../../Common/Loader'
+import {notification} from 'antd'
 
 class View extends Component {
   constructor(props) {
@@ -12,6 +13,14 @@ class View extends Component {
     }
   }
 
+    notifyError = (err) => {
+        notification.error({
+            message: err.message || 'Please try again.',
+            placement: 'topRight',
+        })
+    }
+
+
   componentWillMount() {
     const testId = this.props.history.location.state && this.props.history.location.state.testId;
     if (testId) {
@@ -21,7 +30,11 @@ class View extends Component {
           loading: false,
         })
       }).catch((err) => {
-        console.log(err)
+        this.notifyError(err);
+          this.state = {
+              loading: false,
+              test: {}
+          }
       })
     }
   }
