@@ -1,15 +1,14 @@
 import React, {Component} from 'react';
 import AbstractForm from '../components/AbstractForm';
 import {connect} from 'react-redux';
-import {getSourcesList} from '../../../Redux/actions/index'
-import {getAllExamsList} from "../../../utils/_data"
+import {notification} from 'antd'
+import {getAllExamsList, getSourceList} from "../../../utils/_data"
 
 const mapStateToProps = state => ({
   sources: (state.tests && state.tests.sources) || [],
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchSources: dispatch(getSourcesList),
 });
 
 class Create extends Component {
@@ -17,14 +16,56 @@ class Create extends Component {
     super(props);
     this.state = {
       test: {},
-      exams: []
+      exams: [],
+        sources: [],
     }
   }
 
-  componentWillMount() {
-    this.props.fetchSources();
-    this.getExams();
+  notifyError = (err) => {
+      notification.error({
+          message: err.message || 'Please try again.',
+          placement: 'topRight',
+      })
   }
+ async componentWillMount() {
+     try {
+         const {exams, sources} = await Promise.all([
+             getAllExamsList(),
+             getAllExamsList()
+         ])
+         this.setState({
+             exams: exams || [],
+             sources: sources || []
+         })
+     } catch (err) {
+       this.notifyError(err);
+       this.setState({
+             exams: [{
+                 id: 1,
+                 name: "test",
+                 examStatus: 1,
+                 notes: '',
+                 source: 1,
+                 timetaken: '',
+                 testEnd: '',
+                 testStart: '',
+                 dateCreated: ''
+             },{
+                 id: 1,
+                 name: "test",
+                 examStatus: 1,
+                 notes: '',
+                 source: 1,
+                 timetaken: '',
+                 testEnd: '',
+                 testStart: '',
+                 dateCreated: ''
+             }],
+             sources: [{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'}],
+         })
+
+     }
+ }
 
   getExams = () => {
     getAllExamsList().then(res => {
@@ -32,11 +73,26 @@ class Create extends Component {
         exams: res || []
       })
     }).catch(err => {
+        this.notifyError(err);
     })
   }
 
-  render() {
-    return <AbstractForm label={'Create'} exams={this.state.exams} sources={this.props.sources}/>;
+  getSource = () => {
+      getSourceList().then(res => {
+          this.setState({
+              sources: res || []
+          })
+      }).catch(err => {
+        this.state({
+            examStatusList: [{id: 1, name: 'hide'},{id: 2, name: 'show'}],
+            sources: [{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'}],
+        })
+          this.notifyError(err);
+      })
+  }
+
+    render() {
+    return <AbstractForm label={'Create'} exams={this.state.exams} sources={this.state.sources}/>;
   }
 };
 
