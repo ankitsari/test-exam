@@ -17,6 +17,7 @@ import {
     EDIT_STATUS,
     DELETE_STATUS,
     SET_ERROR,
+    REMOVE_ERROR,
 } from './ActionTypes'
 
 export const getExams = payload => ( {
@@ -104,7 +105,7 @@ export const createStatus = (data) => {
                 isActive: true,
             };
             dispatch( addStatuses(newStatus))
-        })
+        }).then(err => dispatch(getError({getStatusListError:err.message})))
     }
 }
 
@@ -123,7 +124,7 @@ export const editStatus = (data,status) => {
                 isActive: true
             }
             dispatch( editStatuses(status))
-        })
+        }).then(err => dispatch(getError({getStatusListError:err.message})))
     }
 }
 
@@ -138,6 +139,17 @@ export const deleteStatus = (id,status) => {
             let indexToRemove = _.findIndex(status,(s => s.id === id))
             status.splice(indexToRemove,1);
             dispatch( deletedStatus(status));
-        })
+        }).then(err => dispatch(getError({getStatusListError:err.message})))
     }
 }
+
+export const removeError = payload =>({
+    type: REMOVE_ERROR,
+    payload
+});
+
+export const initialError = () => {
+    return (dispatch => {
+        dispatch(removeError());
+    })
+};

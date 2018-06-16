@@ -3,23 +3,26 @@ import {connect} from 'react-redux';
 import swal from 'sweetalert';
 import {bindActionCreators} from 'redux';
 import { Table } from 'antd'
-import {getAllStatusList,createStatus,editStatus,deleteStatus} from '../../Redux/actions'
+import {getAllStatusList,createStatus,editStatus,deleteStatus,initialError} from '../../Redux/actions'
 import StatusModal from './components/StatusModal'
-import Loader from '../Common/Loader'
+import Loader from '../Common/Loader';
+import Toaster from '../Common/Toaster';
 import '../ManageExamination/index.css'
 import 'antd/dist/antd.css'
 
 const mapStateToProps = state => ({
   statusList: state.status.status,
   loading: state.loading,
-  errorMsg : state.tests && state.tests.error
+  errorMsg: state.error.getStatusListError || '',
+  successMsg: state.successMsg || ''
 });
 
 const mapDispatchToProps = dispatch => ({
     fetchStatus: bindActionCreators(getAllStatusList,dispatch),
     createStatus: bindActionCreators(createStatus,dispatch),
     editStatus: bindActionCreators(editStatus,dispatch),
-    deleteStatus: bindActionCreators(deleteStatus,dispatch)
+    deleteStatus: bindActionCreators(deleteStatus,dispatch),
+    removeError: bindActionCreators(initialError,dispatch),
 });
 
 class ManageStatus extends Component {
@@ -134,6 +137,9 @@ class ManageStatus extends Component {
     const {statusList,loading} = this.state;
     let {sortedInfo} = this.state;
     sortedInfo = sortedInfo || {};
+    const { errorMsg, successMsg} = this.props;
+    let message = errorMsg ? errorMsg : successMsg;
+    let type = errorMsg ? 'error' : 'success';
     const columns = [
       {
         title: 'Name',
@@ -158,6 +164,7 @@ class ManageStatus extends Component {
       )
     return (
       <div className="manage-status">
+        <Toaster type={type} message={message} toastComplete={this.props.removeError}/>
         <div className="row col-sm-8 col-md-8 col-sm-offset-2 col-md-offset-2 col-xs-12">
           <div className='col-sm-12 text-right'>
             <button className="btn btn-blue mb-2" onClick={() => this.handleModal()}>Create New Status</button>

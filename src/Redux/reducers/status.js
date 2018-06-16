@@ -8,6 +8,7 @@ import {
 const initialState = {
     loading:false,
     status: [],
+    successMsg:''
 }
 
 export default ( state = initialState, action ) => {
@@ -16,28 +17,31 @@ export default ( state = initialState, action ) => {
             return {
                 ...state,
                 status: action.payload,
-                loading:false
+                loading:false,
+                successMsg:'Successfully fetched status list...!'
             }
         case ADD_STATUS:
             return {
                 ...state,
                 status:[...state.status,action.payload],
+                successMsg:'Successfully Added Status...!'
             }
         case EDIT_STATUS:
             const statusUpdate = _.cloneDeep(action.payload);
             return {
                 ...state,
-                status: statusUpdate
+                status: statusUpdate,
+                successMsg:'Successfully Updated Status ...!'
             };
         case DELETE_STATUS:
             const statusDelete = _.cloneDeep(action.payload);
             return {
                 ...state,
-                status: statusDelete
+                status: statusDelete,
+                successMsg:'Successfully Deleted Status...!'
             }
         default:
             return state
 
     }
-
 }
