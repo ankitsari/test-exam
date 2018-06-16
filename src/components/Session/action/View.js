@@ -31,16 +31,16 @@ class View extends Component {
         })
       }).catch((err) => {
         this.notifyError(err);
-          this.state = {
+          this.setState({
               loading: false,
               test: {}
-          }
+          })
       })
     }
   }
 
   render() {
-    const {test} = this.state;
+      const {test} = this.state;
     const loading = (
       <Loader/>
     );
@@ -142,7 +142,7 @@ class View extends Component {
               </div>
             </div>
             {
-              test.questionAndAnswerList.length ? test.questionAndAnswerList.map((answer, i) => (
+                test && test.questionAndAnswerList && test.questionAndAnswerList.length ? test.questionAndAnswerList.map((answer, i) => (
                 <div key={i}>
                   <div className='row'>
                     <div className='col-sm-12'>
