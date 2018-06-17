@@ -1,6 +1,6 @@
 .btn-blue {
   color: #fff !important;
-  background-color: #428bca;
+  background-color: #165d93;
   cursor: pointer;
   text-decoration: none;
   padding: 5px 10px;
@@ -14,10 +14,16 @@
   color: red; }
 
 .modal-dialog .modal-header {
-  background-color: #428bca;
+  background-color: #165d93;
   color: #fff;
   display: unset;
   margin-top: 0 !important;
   margin-bottom: 0 !important; }
   .modal-dialog .modal-header .close {
     margin-top: -7px; }
+
+.navbar {
+  background: #165d93 !important; }
+
+select.form-control {
+  height: 40px !important; }

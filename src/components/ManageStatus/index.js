@@ -2,13 +2,20 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import swal from 'sweetalert';
 import {bindActionCreators} from 'redux';
-import { Table } from 'antd'
-import {getAllStatusList,createStatus,editStatus,deleteStatus,initialError} from '../../Redux/actions'
+import { Table,notification } from 'antd'
+import {
+    getAllStatusList,
+    createStatus,
+    editStatus,
+    deleteStatus,
+    initialError
+} from '../../Redux/actions'
+import {getStatusList,addStatus,updateStatus,removeStatus} from "../../utils/_data";
 import StatusModal from './components/StatusModal'
 import Loader from '../Common/Loader';
-import Toaster from '../Common/Toaster';
 import '../ManageExamination/index.css'
 import 'antd/dist/antd.css'
+import _ from "lodash";
 
 const mapStateToProps = state => ({
   statusList: state.status.status,
@@ -43,11 +50,33 @@ class ManageStatus extends Component {
   }
 
   componentWillMount() {
-      this.props.fetchStatus();
+      this.fetchStatus();
+  }
+
+  fetchStatus = async() => {
+      try{
+        const data = await getStatusList();
+        this.setState({statusList:data.status});
+      }catch (err) {
+          this.notifyError(err)
+      }
+  }
+
+  notifyError = (err) => {
+      notification.error({
+          message: err.message || 'Please try again.',
+          placement: 'topRight',
+      })
+  }
+
+  notifySuccess = (message) => {
+      notification.success({
+          message: message,
+          placement: 'topRight',
+      })
   }
 
   removeExam = (statusId) => {
-    const {statusList} = this.state;
     if (statusId) {
       swal({
         title: "Are you sure?",
@@ -57,7 +86,7 @@ class ManageStatus extends Component {
         dangerMode: true,
       }).then((status) => {
         if (status) {
-          this.props.deleteStatus(statusId,statusList);
+          this.deleteStatus(statusId);
         }
       });
     }
@@ -105,8 +134,48 @@ class ManageStatus extends Component {
     }
   };
 
+  createStatus = async(data) => {
+    try{
+      const res = await createStatus(data);
+      this.setState((state)=>({statusList:[...state.statusList,res]}));
+      this.notifySuccess('Successfully Added Status...!');
+    }catch (err) {
+      this.notifyError(err)
+    }
+  }
+
+  editStatus = async(data) => {
+    try{
+        let {statusList} = this.state;
+        const res = await updateStatus(data);
+        let indexToEdit = _.findIndex(statusList,(s => s.id === data.Id))
+        statusList[indexToEdit] = {
+            id: data.Id,
+            name: data.Name,
+            isActive: true
+        }
+        this.setState({statusList});
+        this.notifySuccess('Successfully Updated Status ...!');
+    }catch (err) {
+        this.notifyError(err);
+    }
+   }
+
+   deleteStatus = async(data) => {
+    try{
+      let {statusList} = this.state;
+      const res = await removeStatus(data);
+      let indexToRemove = _.findIndex(statusList,(s => s.id === data))
+      statusList.splice(indexToRemove,1);
+      this.setState({statusList});
+      this.notifySuccess('Successfully Deleted Status...!');
+    }catch (err) {
+      this.notifyError(err);
+    }
+   }
+
   saveStatus = () => {
-    const {statusId, name,statusList} = this.state;
+    const {statusId, name} = this.state;
     let err = this.validate('name',name);
     if(err){
       this.setState({error:err});
@@ -115,9 +184,9 @@ class ManageStatus extends Component {
     const data = { Name: name }
     if(statusId){
       data.Id = statusId
-      this.props.editStatus(data,statusList);
+      this.editStatus(data);
     }else {
-        this.props.createStatus(data);
+      this.createStatus(data);
     }
     this.handleModal();
   }
@@ -164,7 +233,6 @@ class ManageStatus extends Component {
       )
     return (
       <div className="manage-status">
-        <Toaster type={type} message={message} toastComplete={this.props.removeError}/>
         <div className="row col-sm-8 col-md-8 col-sm-offset-2 col-md-offset-2 col-xs-12">
           <div className='col-sm-12 text-right'>
             <button className="btn btn-blue mb-2" onClick={() => this.handleModal()}>Create New Status</button>

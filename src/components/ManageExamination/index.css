@@ -21,7 +21,7 @@
 .manage-exam table, .manage-status table {
   border: 1px solid #ddd; }
   .manage-exam table thead, .manage-status table thead {
-    background-color: #666;
+    background-color: #165d93;
     color: #fff; }
     .manage-exam table thead tr th, .manage-status table thead tr th {
       white-space: nowrap;
@@ -30,7 +30,7 @@
       line-height: 18px;
       border: none;
       font-size: 12px;
-      background-color: #666;
+      background-color: #165d93;
       overflow: hidden;
       text-overflow: ellipsis;
       color: #fff; }
@@ -51,3 +51,7 @@
       font-size: 13px; }
     .manage-exam table tbody tr td .btn, .manage-status table tbody tr td .btn {
       font-size: 12px; }
+  .manage-exam table th.column-money,
+  .manage-exam table td.column-money, .manage-status table th.column-money,
+  .manage-status table td.column-money {
+    text-align: right !important; }

@@ -17,7 +17,7 @@
 .administration table {
   border: 1px solid #ddd; }
   .administration table thead {
-    background-color: #666;
+    background-color: #165d93;
     color: #fff; }
     .administration table thead tr th {
       white-space: nowrap;
@@ -26,7 +26,7 @@
       line-height: 18px;
       border: none;
       font-size: 12px;
-      background-color: #666;
+      background-color: #165d93;
       overflow: hidden;
       text-overflow: ellipsis;
       color: #fff; }
