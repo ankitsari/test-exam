@@ -49,8 +49,8 @@ class ManageStatus extends Component {
     }
   }
 
-  componentWillMount() {
-      this.fetchStatus();
+ async componentWillMount() {
+     await this.fetchStatus();
   }
 
     fetchStatus = async () => {
@@ -199,9 +199,9 @@ class ManageStatus extends Component {
     });
   }
 
-  componentWillReceiveProps(nextProps){
-      this.setState({statusList: nextProps.statusList, loading: nextProps.loading});
-  }
+  // componentWillReceiveProps(nextProps){
+  //     this.setState({statusList: nextProps.statusList, loading: nextProps.loading});
+  // }
 
   render() {
     const {statusList,loading} = this.state;
@@ -235,7 +235,7 @@ class ManageStatus extends Component {
       )
     return (
       <div className="manage-status">
-        <div className="row col-sm-8 col-md-8 col-sm-offset-2 col-md-offset-2 col-xs-12">
+        <div className="row col-sm-12 col-md-12 col-xs-12">
           <div className='col-sm-12 text-right'>
             <button className="btn btn-blue mb-2" onClick={() => this.handleModal()}>Create New Status</button>
           </div>

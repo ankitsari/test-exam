@@ -44,9 +44,9 @@ export const getSessionTests = payload => ( {
 
 export const getSessionTestsList = (dispatch) => () => {
     getTestsList().then(res => {
-        dispatch( getSessionTests(res.data))
+        dispatch(getSessionTests(res.data))
     } ).catch(err => {
-        dispatch( getSessionError({sessionTestsErr: err.message}))
+        dispatch(getSessionError({sessionTestsErr: err.message}))
     });
 };
 

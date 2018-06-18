@@ -48,7 +48,7 @@ class Home extends Component {
         <div className="row">
           <div className="col-sm-12 col-md-12">
             <button className="btn btn-primary mr-2" onClick={this.loginOffice365}>Login with Office365</button>
-            <button className="btn btn-primary">Sign-up with Office365</button>
+            <button className="btn btn-primary" onClick={this.loginOffice365}>Sign-up with Office365</button>
           </div>
         </div>
       </div>

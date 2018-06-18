@@ -34,10 +34,6 @@ class App extends Component {
           {
             localStorage.getItem('exam-token') ?
               <div>
-                <div className="flex-row mt-3">
-                  <h2>Administration</h2>
-                </div>
-                <hr/>
                 <Switch>
                   <Route exact path="/session/create" component={Create}/>
                   <Route exact path="/session/edit/:id" component={Edit}/>

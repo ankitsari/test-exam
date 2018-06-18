@@ -8,7 +8,6 @@ import {getSessionTestsList, getSourcesList, } from '../../Redux/actions/index'
 import {
     getExamStatusList,
     deleteSession,
-    deleteExamsById,
     updateStatusMultiple,
     multipleDelete,
     getTestsList,
@@ -58,27 +57,33 @@ class Session extends Component {
         }
     }
 
-    componentWillMount() {
-        this.props.fetchTests();
-        this.props.fetchSources();
-        this.getExamStatus();
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.testList && nextProps.testList.length && this.state.examStatusList && this.state.examStatusList.length) {
-            const testList = nextProps.testList;
+    async componentWillMount() {
+        try {
+            const [resTest, resSources, examStatusList] = await Promise.all([
+                getTestsList(),
+                getSourceList(),
+                getExamStatusList()
+            ]);
+            const testList = resTest && resTest.data || [];
             testList.forEach(test => {
                 test.timeStampTestStart = test.testStart ? moment(test.testStart).unix() : 0;
                 test.timeStampTestEnd = test.testEnd ? moment(test.testEnd).unix() : 0;
                 test.timeStampTimeTaken = test.timeStampTestEnd - test.timeStampTestStart;
                 test.key = test.id;
-            })
+            });
             this.setState({
                 filterList: testList,
                 sessionList: testList,
-
+                examStatusList: examStatusList || [],
+                sources: resSources && resSources.data || [],
+                loading: false,
             }, () => {
                 this.sessionFilter(null, null, false)
+            })
+        } catch (err) {
+            this.notifyError(err);
+            this.setState({
+                loading: false,
             })
         }
     }
@@ -87,18 +92,6 @@ class Session extends Component {
         notification.error({
             message: err.message || 'Please try again.',
             placement: 'topRight',
-        })
-    };
-
-    getExamStatus = () => {
-        getExamStatusList().then(res => {
-            this.setState({
-                examStatusList: res || [],
-            })
-        }).catch(err => {
-            this.setState({
-                examStatusError: err.message,
-            })
         })
     };
 
@@ -393,6 +386,10 @@ class Session extends Component {
         return (
 
             <div className="administration">
+                <div className="flex-row mt-3">
+                    <h2>Administration</h2>
+                </div>
+                <hr/>
                 {finalError &&  finalError.length > 0 &&
                 <div className="alert alert-danger">
                     {
@@ -427,7 +424,7 @@ class Session extends Component {
                                     <SourceInput className="form-control mb-2 ml-2 mr-sm-2 select-filter pointer select"
                                                  onChange={this.onFilterChange}
                                                  value={where.sourceId}
-                                                 sources={this.props.sources}
+                                                 sources={this.state.sources}
                                                  name="sourceId"
                                     />
                                 </div>
