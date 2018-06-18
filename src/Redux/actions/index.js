@@ -18,6 +18,8 @@ import {
     DELETE_STATUS,
     SET_ERROR,
     REMOVE_ERROR,
+    SET_EXAMS_LIST_ERROR,
+    SET_SOURCES_LIST_ERROR,
 } from './ActionTypes'
 
 export const getExams = payload => ( {
@@ -33,7 +35,7 @@ export const getManageExamsList = (dispatch) => () => {
     })
 };
 
-
+// start getSessionTestsList
 export const getSessionTests = payload => ( {
     type: SET_SESSION_TEST_LIST,
     payload,
@@ -43,30 +45,44 @@ export const getSessionTestsList = (dispatch) => () => {
     getTestsList().then(res => {
         dispatch( getSessionTests(res.data))
     } ).catch(err => {
-        dispatch( getError({sessionTests: err.message}))
+        dispatch( getSessionError({sessionTestsErr: err.message}))
     });
 };
 
+export const getSessionError =  payload =>({
+    type: SET_EXAMS_LIST_ERROR,
+    payload
+});
+
+// end getSessionTestsList
+
+
 // common
+export const getError = payload => ({
+    type: SET_ERROR,
+    payload
+});
+
+// start getSourcesList
+export const getSourcesList = (dispatch) => () => {
+    getSourceList().then(res => {
+        dispatch( getSources(res.data))
+    } ).catch(err => {
+        dispatch( getSourcesError({sourcesListError: err.message}))
+    });
+ };
 
 export const getSources = payload => ( {
     type: SET_SOURCES_LIST,
     payload,
 } );
 
-export const getError = payload => ({
-    type: SET_ERROR,
+export const getSourcesError = payload => ({
+    type: SET_SOURCES_LIST_ERROR,
     payload
 });
 
-export const getSourcesList = (dispatch) => () => {
-    getSourceList().then(res => {
-        dispatch( getSources(res.data))
-    } ).catch(err => {
-        dispatch( getError({sourcesList: err.message}))
-    });
- };
-
+//end getSourcesList
 export const getStatuses = payload => ({
     type: SET_STATUS_LIST,
     payload,

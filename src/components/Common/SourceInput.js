@@ -4,7 +4,7 @@ const SourceInput = props => {
     const {className, onChange, value, name, sources, examStatusError, data = 0} = props;
   return (
       <div>
-            <span style={{color:"red"}} >{examStatusError}</span>
+            {/*<span style={{color:"red"}} >{examStatusError}</span>*/}
             <select className={className} onChange={onChange} value={value} name={name} data-id={data}>
               <option value="">--Select--</option>
               {

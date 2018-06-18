@@ -22,7 +22,10 @@ import 'antd/dist/antd.css'
 const mapStateToProps = state => ({
     testList: state.tests && state.tests.tests,
     sources: (state.tests && state.tests.sources) || [],
-    errorMsg: state.tests && state.tests.error
+    errorMsg: state.tests && state.tests.error,
+    sessionErr : state.tests.sessionError,
+    examListError: state.tests.examListErrorMessage,
+    sourcesListError: state.tests.sourcesListErrorMessage,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -51,6 +54,7 @@ class Session extends Component {
                 order: 'descend',
                 columnKey: '',
             },
+            examStatusError:''
         }
     }
 
@@ -78,6 +82,13 @@ class Session extends Component {
             })
         }
     }
+
+    notifyError = (err) => {
+        notification.error({
+            message: err.message || 'Please try again.',
+            placement: 'topRight',
+        })
+    };
 
     getExamStatus = () => {
         getExamStatusList().then(res => {
@@ -208,13 +219,12 @@ class Session extends Component {
                             });
                         }
                     }).catch((err) => {
-                        console.log(err)
+                        this.notifyError(err);
                     })
-
                 }
             });
         }
-    }
+    };
 
     onMultipleDelete = () => {
         let {selectedRowKeys, filterList, sessionList} = this.state;
@@ -275,11 +285,12 @@ class Session extends Component {
 
     render() {
         const {filterList, where, examStatusList, selectedRowKeys} = this.state;
+        const {examListError,sourcesListError} =this.props;
         let {sortedInfo, examStatusError} = this.state;
         const rowSelection = {
             onChange: this.onChangeCheck,
             getCheckboxProps: this.getCheckboxProps
-        }
+        };
         sortedInfo = sortedInfo || {};
         const columns = [
             {
@@ -344,8 +355,7 @@ class Session extends Component {
                                                            onChange={(e) => this.onChange(e, examStatus)}
                                                            sources={examStatusList}
                                                            name="status"
-                                                           data={exam.id}
-                                                           examStatusError={this.state.examStatusError}/>,
+                                                           data={exam.id}/>,
                 sorter: (a, b) => a.examStatus - b.examStatus,
                 sortOrder: sortedInfo.columnKey === 'examStatus' && sortedInfo.order,
             },
@@ -355,7 +365,7 @@ class Session extends Component {
                 width: '15%',
                 render: (text, exam) =>
                     <div className="form-inline">
-                        <Link to={{pathname: `/session/view/${exam.id}`, state: {testId: exam.id}}}
+                        <Link to={`/session/view/${exam.id}`}
                               className="btn btn-blue mr-1">View</Link>
 
                         <Link to={{pathname: `/session/edit/${exam.id}`, state: {testId: exam.id}}}
@@ -369,10 +379,26 @@ class Session extends Component {
         if (this.state.loading) {
             return  <Loader/>
         }
+        let finalError = []
+        if(examListError) {
+            finalError.push(examListError)
+        }
+        if(examStatusError) {
+            finalError.push(examStatusError)
+        }
+        if(sourcesListError) {
+            finalError.push(sourcesListError)
+        }
 
         return (
 
             <div className="administration">
+                {finalError &&  finalError.length > 0 &&
+                <div className="alert alert-danger">
+                    {
+                        finalError.map(p => (<span><span>{p}</span><br/></span> ))
+                    }
+                </div>}
                 <div className="d-flex justify-content-end">
                     <div className="panel panel-default">
                         <div className="panel-heading"><b>configure</b>
@@ -403,7 +429,6 @@ class Session extends Component {
                                                  value={where.sourceId}
                                                  sources={this.props.sources}
                                                  name="sourceId"
-                                                 examStatusError={this.state.examStatusError}
                                     />
                                 </div>
 
@@ -430,8 +455,6 @@ class Session extends Component {
                             </form>
                         </div>
                     </div>
-
-
 
                 </div>
                 <div className="clear"/>

@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {logout} from "../../utils/_data";
 import './Header.css';
+import { withRouter } from 'react-router-dom';
 
-class Header extends Component {
+class Header extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -25,12 +26,16 @@ class Header extends Component {
   }
 
   onClick = (pathname) => {
-    if (pathname !== this.state.pathname) {
+    // if (pathname !== this.state.pathname) {
+    //   this.setState({
+    //     pathname,
+    //   })
+    //   window.location.href = pathname
+    // }
       this.setState({
-        pathname,
+          pathname,
       })
-      window.location.href = pathname
-    }
+     this.props.history.push(pathname)
   }
 
   render() {
@@ -70,4 +75,4 @@ class Header extends Component {
   }
 }
 
-export default Header;
+export default withRouter(Header);

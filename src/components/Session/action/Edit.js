@@ -2,8 +2,9 @@ import React, {Component} from 'react';
 import AbstractForm from '../components/AbstractForm';
 import { connect } from 'react-redux';
 import { getSourcesList } from '../../../Redux/actions/index'
-import { getTestByIdForEdit, getAllExamsList, getExamStatusList } from "../../../utils/_data";
+import { getTestByIdForEdit, getAllExamsList, getExamStatusList, getSourceList } from "../../../utils/_data";
 import Loader from '../../Common/Loader'
+import {notification} from 'antd'
 
 const mapStateToProps = state => ({
     sources: (state.tests && state.tests.sources) || [],
@@ -24,38 +25,37 @@ class Edit extends Component {
         }
     }
 
-    componentWillMount() {
-        this.props.fetchSources();
-        this.getExams();
-        this.getExamStatus();
-        const testId = this.props.history.location.state && this.props.history.location.state.testId;
-        if(testId) {
-            getTestByIdForEdit(testId).then((res) => {
-                this.setState({
-                    test: res || {},
-                    testId,
-                    loading: false,
-                })
-            }).catch((err) => {
-                console.log(err)
+    notifyError = (err) => {
+        notification.error({
+            message: err.message || 'Please try again.',
+            placement: 'topRight',
+        })
+    }
+
+    async componentWillMount() {
+        const {params} = this.props.match;
+        const testId = params && params.id;
+        try{
+            const [allExams, statusList, sourceList, test] = await Promise.all([
+                getAllExamsList(),
+                getExamStatusList(),
+                getSourceList(),
+                getTestByIdForEdit(testId)
+            ]);
+            this.setState({
+                exams: allExams,
+                examStatusList: statusList,
+                sources: sourceList.data,
+                test: test || {},
+                testId,
+                loading: false,
+            })
+        }catch(err) {
+            this.notifyError(err);
+            this.setState({
+                loading: false,
             })
         }
-    }
-
-    getExams = () => {
-        getAllExamsList().then(res => {
-            this.setState({
-                exams: res || []
-            })
-        }).catch(err =>{})
-    }
-
-    getExamStatus = () => {
-        getExamStatusList().then(res => {
-            this.setState({
-                examStatusList: res || []
-            })
-        }).catch(err =>{})
     }
 
     render() {

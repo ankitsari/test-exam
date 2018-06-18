@@ -22,7 +22,8 @@ class View extends Component {
 
 
   componentWillMount() {
-    const testId = this.props.history.location.state && this.props.history.location.state.testId;
+    const {params} = this.props.match;
+    const testId = params && params.testId;
     if (testId) {
       getTestById(testId).then((res) => {
         this.setState({

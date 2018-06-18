@@ -10,3 +10,7 @@ export const DELETE_STATUS = 'DELETE_STATUS';
 
 export const SET_ERROR = 'SET_ERROR';
 export const REMOVE_ERROR = 'REMOVE_ERROR';
+
+
+export const SET_EXAMS_LIST_ERROR = 'SET_EXAMS_LIST_ERROR';
+export const SET_SOURCES_LIST_ERROR = 'SET_SOURCES_LIST_ERROR';

@@ -2,7 +2,10 @@ import {
     SET_SESSION_TEST_LIST,
     SET_SOURCES_LIST,
     SET_ERROR,
-    REMOVE_ERROR
+    SET_EXAMS_LIST_ERROR,
+    SET_SOURCES_LIST_ERROR,
+    REMOVE_ERROR,
+    SET_EXAMS_LIST_LOADING
 } from '../actions/ActionTypes'
 
 const initialState = {
@@ -14,7 +17,9 @@ const initialState = {
         ExamsListError:'',
         getStatusListError:'',
     },
-    successMsg:''
+    successMsg:'',
+    sessionError:[],
+    errorMessage:[],
 }
 
 export default ( state = initialState, action ) => {
@@ -30,15 +35,21 @@ export default ( state = initialState, action ) => {
                 ...state,
                 sources: action.payload,
             };
-        case SET_ERROR:
-            return{
+        case SET_EXAMS_LIST_ERROR:
+            return {
                 ...state,
-                error:{
-                    sourceError:action.payload.sourcesList || '',
-                    sessionTestsError:action.payload.sessionTests || '',
-                    ExamsListError:action.payload.ExamsListError || '',
-                    getStatusListError:action.payload.getStatusListError || '',
-                },
+                examListErrorMessage: [
+                    ...state.errorMessage,
+                    action.payload.sessionTestsErr,
+                ]
+            };
+        case SET_SOURCES_LIST_ERROR:
+            return {
+                ...state,
+                sourcesListErrorMessage: [
+                    ...state.errorMessage,
+                    action.payload.sourcesListError,
+                ]
             };
         case REMOVE_ERROR:
             return{

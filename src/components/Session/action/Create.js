@@ -29,67 +29,19 @@ class Create extends Component {
   }
  async componentWillMount() {
      try {
-         const {exams, sources} = await Promise.all([
+         const [exams, res] = await Promise.all([
              getAllExamsList(),
-             getAllExamsList()
-         ])
+             getSourceList()
+         ]);
+
          this.setState({
              exams: exams || [],
-             sources: sources || []
+             sources: res.data || []
          })
      } catch (err) {
        this.notifyError(err);
-       this.setState({
-             exams: [{
-                 id: 1,
-                 name: "test",
-                 examStatus: 1,
-                 notes: '',
-                 source: 1,
-                 timetaken: '',
-                 testEnd: '',
-                 testStart: '',
-                 dateCreated: ''
-             },{
-                 id: 1,
-                 name: "test",
-                 examStatus: 1,
-                 notes: '',
-                 source: 1,
-                 timetaken: '',
-                 testEnd: '',
-                 testStart: '',
-                 dateCreated: ''
-             }],
-             sources: [{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'}],
-         })
-
      }
- }
-
-  getExams = () => {
-    getAllExamsList().then(res => {
-      this.setState({
-        exams: res || []
-      })
-    }).catch(err => {
-        this.notifyError(err);
-    })
-  }
-
-  getSource = () => {
-      getSourceList().then(res => {
-          this.setState({
-              sources: res || []
-          })
-      }).catch(err => {
-        this.state({
-            examStatusList: [{id: 1, name: 'hide'},{id: 2, name: 'show'}],
-            sources: [{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'},{id: 1, name: 'upwork'}],
-        })
-          this.notifyError(err);
-      })
-  }
+ };
 
     render() {
     return <AbstractForm label={'Create'} exams={this.state.exams} sources={this.state.sources}/>;

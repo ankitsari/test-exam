@@ -157,11 +157,10 @@ class AbstractForm extends Component {
     }
     if (this.props.testId) {
       updateSession(fields).then((res) => {
-
         swal("Record updated successfully", {
           icon: "success",
         }).then((msg) => {
-          if(msg === 'Done') {
+          if(msg) {
             this.props.history.push({
               pathname: '/'
             });
@@ -169,7 +168,6 @@ class AbstractForm extends Component {
         });
       }).catch((err) => {
         this.notifyError(err);
-        console.log(err)
       })
     } else {
       createSession(fields).then((res) => {
@@ -182,7 +180,6 @@ class AbstractForm extends Component {
         });
       }).catch((err) => {
         this.notifyError(err);
-        console.log(err)
       })
     }
   };
