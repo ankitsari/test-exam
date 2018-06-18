@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
 import swal from 'sweetalert';
 import {Table, notification} from 'antd'
@@ -18,7 +18,7 @@ const mapDispatchToProps = dispatch => ({
   fetchExams: dispatch(getManageExamsList),
 });
 
-class ManageExam extends Component {
+class ManageExam extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,8 +44,9 @@ class ManageExam extends Component {
 
   async componentWillMount() {
       try {
-        const data = await getExamsList();
-          const examsList = data && data.map(x => {
+        const resExams = await getExamsList();
+        debugger;
+          const examsList = resExams && resExams.data && resExams.data.map(x => {
               x.key = x.testId;
               return x
           });
@@ -54,9 +55,9 @@ class ManageExam extends Component {
               loading: false,
           })
       } catch(er) {
-          this.notifyError(er)
+          this.notifyError(er);
           this.setState({
-              examsList: [{testTitle: 'test', key: 1, testId: 1}],
+              // examsList: [{testTitle: 'test', key: 1, testId: 1}],
               loading: false,
           });
       }
@@ -113,7 +114,6 @@ class ManageExam extends Component {
           }).catch((err) => {
               this.notifyError(err)
           })
-
         }
       });
     }
@@ -254,7 +254,7 @@ class ManageExam extends Component {
           this.notifySuccess("Your exam details has been created!")
       }).catch((er) => {
           this.notifyError(er)
-        console.log(er)
+          return;
       });
     }
     this.setState({
