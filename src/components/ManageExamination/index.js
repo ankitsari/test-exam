@@ -45,7 +45,6 @@ class ManageExam extends React.Component {
   async componentWillMount() {
       try {
         const resExams = await getExamsList();
-        debugger;
           const examsList = resExams && resExams.data && resExams.data.map(x => {
               x.key = x.testId;
               return x
@@ -312,8 +311,8 @@ class ManageExam extends React.Component {
           className: 'text-right',
         render: (text, exam) =>
           <div className="form-inline pull-right">
-            <button className="btn btn-danger btn-sm mr-1 " onClick={() => this.removeExam(exam.testId)}>Delete</button>
-            <button className="btn btn-blue btn-sm " onClick={() => this.handleModal(exam)}>Edit</button>
+            <button className="btn btn-blue btn-sm mr-1" onClick={() => this.handleModal(exam)}>Edit</button>
+            <button className="btn btn-danger btn-sm " onClick={() => this.removeExam(exam.testId)}>Delete</button>
           </div>
       },
     ];

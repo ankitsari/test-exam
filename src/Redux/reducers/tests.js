@@ -56,7 +56,7 @@ export default ( state = initialState, action ) => {
                 ...state,
                 error:{...initialState.error},
                 successMsg:''
-            }
+            };
         default:
             return state
     }

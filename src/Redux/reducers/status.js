@@ -3,10 +3,12 @@ import {
     SET_STATUS_LIST,
     ADD_STATUS,
     EDIT_STATUS,
-    DELETE_STATUS
+    DELETE_STATUS,
+    SET_STATUS_ERROR,
+    START_REQUEST
 } from '../actions/ActionTypes'
 const initialState = {
-    loading:false,
+    loading: false,
     status: [],
     successMsg:''
 }
@@ -17,12 +19,18 @@ export default ( state = initialState, action ) => {
             return {
                 ...state,
                 status: action.payload,
-                loading:false,
+                loading: false,
                 successMsg:'Successfully fetched status list...!'
+            }
+        case START_REQUEST:
+            return {
+                ...state,
+                loading: true,
             }
         case ADD_STATUS:
             return {
                 ...state,
+                loading: false,
                 status:[...state.status,action.payload],
                 successMsg:'Successfully Added Status...!'
             }
@@ -30,6 +38,7 @@ export default ( state = initialState, action ) => {
             const statusUpdate = _.cloneDeep(action.payload);
             return {
                 ...state,
+                loading: false,
                 status: statusUpdate,
                 successMsg:'Successfully Updated Status ...!'
             };
@@ -38,8 +47,17 @@ export default ( state = initialState, action ) => {
             return {
                 ...state,
                 status: statusDelete,
+                loading: false,
                 successMsg:'Successfully Deleted Status...!'
             }
+        case SET_STATUS_ERROR: {
+            return {
+                ...state,
+                successMsg:'',
+                loading: false,
+                errorMsg: action.payload.getStatusListError
+            }
+        }
         default:
             return state
 

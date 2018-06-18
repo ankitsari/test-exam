@@ -19,7 +19,8 @@ import {
     SET_ERROR,
     REMOVE_ERROR,
     SET_EXAMS_LIST_ERROR,
-    SET_SOURCES_LIST_ERROR,
+    SET_SOURCES_LIST_ERROR,SET_STATUS_ERROR
+
 } from './ActionTypes'
 
 export const getExams = payload => ( {
@@ -59,7 +60,7 @@ export const getSessionError =  payload =>({
 
 // common
 export const getError = payload => ({
-    type: SET_ERROR,
+    type: SET_STATUS_ERROR,
     payload
 });
 

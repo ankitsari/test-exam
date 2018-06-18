@@ -93,9 +93,9 @@ export async function getExamsList() {
 }
 
 export async function deleteExamsById(TestId) {
-  // const url = utils.getURL(`/ManageExamApi/Delete/${TestId}`);
-  // const res = await axios.delete(url, config)
-  // return res.data;
+  const url = utils.getURL(`/ManageExamApi/Delete/${TestId}`);
+  const res = await axios.delete(url, config)
+  return res.data;
 }
 
 export async function createExams(data) {
@@ -112,9 +112,9 @@ export async function editExamById(examId) {
 }
 
 export async function updateExam(data) {
-  /*const url = utils.getURL('/ManageExamApi/Update');
+  const url = utils.getURL('/ManageExamApi/Update');
   const res = await axios.put(url, data, config)
-  return res.data;*/
+  return res.data;
 }
 
 // For Test
@@ -156,9 +156,9 @@ export async function checkValidateToken(token) {
 }
 
 export async function deleteSession(id) {
-  // const url = utils.getURL(`/CreateSessionApi/delete/${id}`);
-  // const res = await axios.delete(url, config)
-  // return res.data;
+  const url = utils.getURL(`/CreateSessionApi/delete/${id}`);
+  const res = await axios.delete(url, config)
+  return res.data;
 }
 
 // Technical test
@@ -176,10 +176,9 @@ export async function submitTechnicalTest(data) {
 }
 
 export async function updateStatusMultiple(data) {
-    // const url = utils.getURL(`/CreateSessionApi/UpdateStatusForMultiple`);
-    // const res = await axios.post(url, data, config)
-    // return res.data;
-    return {isSuccess: true};
+    const url = utils.getURL(`/CreateSessionApi/UpdateStatusForMultiple`);
+    const res = await axios.post(url, data, config)
+    return res.data;
 }
 
 export async function multipleDelete(data) {
@@ -217,15 +216,15 @@ export async function addStatus(data) {
 }
 
 export async function updateStatus(data) {
-    // const url = utils.getURL('/ExamStatusApi/Update');
-    // const res = await axios.put(url, data, config)
-    // return res.data;
+    const url = utils.getURL('/ExamStatusApi/Update');
+    const res = await axios.put(url, data, config)
+    return res.data;
 }
 
 export async function removeStatus(id) {
-    // const url = utils.getURL('/ExamStatusApi/Delete/'+id);
-    // const res = await axios.delete(url, config)
-    // return res.data;
+    const url = utils.getURL('/ExamStatusApi/Delete/'+id);
+    const res = await axios.delete(url, config)
+    return res.data;
 }
 
 setInterval(async function () {

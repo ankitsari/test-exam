@@ -20,8 +20,8 @@ import _ from "lodash";
 const mapStateToProps = state => ({
   statusList: state.status.status,
   loading: state.loading,
-  errorMsg: state.error.getStatusListError || '',
-  successMsg: state.successMsg || ''
+  errorMsg: state.status.errorMsg || '',
+  successMsg: state.status.successMsg || ''
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -53,14 +53,15 @@ class ManageStatus extends Component {
       this.fetchStatus();
   }
 
-  fetchStatus = async() => {
-      try{
-        const data = await getStatusList();
-        this.setState({statusList:data.status});
-      }catch (err) {
-          this.notifyError(err)
-      }
-  }
+    fetchStatus = async () => {
+        try {
+            const res = await getStatusList();
+            this.setState({statusList: res.data, loading: false});
+        } catch (err) {
+            this.setState({loading: false});
+            this.notifyError(err)
+        }
+    };
 
   notifyError = (err) => {
       notification.error({
@@ -136,9 +137,9 @@ class ManageStatus extends Component {
 
   createStatus = async(data) => {
     try{
-      const res = await createStatus(data);
-      this.setState((state)=>({statusList:[...state.statusList,res]}));
-      this.notifySuccess('Successfully Added Status...!');
+      const res = await addStatus(data);
+        this.setState((state) => ({statusList: [...state.statusList, {name: res.testTitle, id: res.testId}]}));
+        this.notifySuccess('Successfully Added Status...!');
     }catch (err) {
       this.notifyError(err)
     }
@@ -177,10 +178,10 @@ class ManageStatus extends Component {
   saveStatus = () => {
     const {statusId, name} = this.state;
     let err = this.validate('name',name);
-    if(err){
-      this.setState({error:err});
-      return
-    }
+      if (err) {
+          this.setState({error: err});
+          return
+      }
     const data = { Name: name }
     if(statusId){
       data.Id = statusId
@@ -199,7 +200,7 @@ class ManageStatus extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    this.setState({statusList:nextProps.statusList,loading:nextProps.loading});
+      this.setState({statusList: nextProps.statusList, loading: nextProps.loading});
   }
 
   render() {
@@ -219,10 +220,11 @@ class ManageStatus extends Component {
       {
         title: 'Action',
         dataIndex: '',
+        className: 'text-right',
         render: (text, status) =>
-          <div className="form-inline">
-            <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeExam(status.id)}>Delete</button>
-            <button className="btn btn-blue btn-sm" onClick={() => this.handleModal(status)}>Edit</button>
+          <div className="form-inline pull-right">
+            <button className="btn btn-blue btn-sm mr-1" onClick={() => this.handleModal(status)}>Edit</button>
+            <button className="btn btn-danger btn-sm" onClick={() => this.removeExam(status.id)}>Delete</button>
           </div>
       },
     ];
