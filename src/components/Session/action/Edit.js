@@ -67,7 +67,7 @@ class Edit extends Component {
         if (this.state.loading) {
             return loading
         }
-        return <AbstractForm label={'Edit'} history={this.props.history} testId={testId} exams={this.state.exams} examStatusList={this.state.examStatusList} sources={this.props.sources} formData={test} />;
+        return <AbstractForm label={'Edit'} history={this.props.history} testId={testId} exams={this.state.exams} examStatusList={this.state.examStatusList} sources={this.state.sources} formData={test} />;
     }
 }
 
