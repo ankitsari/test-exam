@@ -1,5 +1,5 @@
 //const getURL = url => `http://createsession.azurewebsites.net/api${url ? url : ''}`
-const getURL = url => `http://techview.azurewebsites.net/api${url ? url : ''}`
+const getURL = url => `https://techview.azurewebsites.net/api${url ? url : ''}`
 
 const getCookie = (name) => {
 
