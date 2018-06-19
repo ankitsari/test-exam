@@ -4,8 +4,8 @@ import { notification } from "antd";
 import { urlDomain } from "../../utils/common"
 
 
-//const callbackUrl = `${urlDomain}/login`;
-const callbackUrl = `http://localhost:3000/login`;
+const callbackUrl = `${urlDomain}/login`;
+//const callbackUrl = `http://localhost:3000/login`;
 
 class Home extends Component {
   componentWillMount() {
