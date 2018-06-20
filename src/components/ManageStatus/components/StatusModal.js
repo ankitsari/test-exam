@@ -1,6 +1,7 @@
 import React from 'react';
 //import Modal from 'react-bootstrap4-modal';
 import { Modal, Button } from 'react-bootstrap';
+import '../../ManageExamination/index.css'
 
 const StatusModal = ({handleModal, onChange, state, saveStatus}) =>  (
   <Modal show={state.isModal} onHide={handleModal} bsSize={"small"}>

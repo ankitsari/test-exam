@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import CKEditor from "react-ckeditor-component";
+import '../index.css'
 
 class ExamModal extends Component {
 

@@ -66,3 +66,14 @@ label {
 .token-header {
   border-bottom: solid 1px #80808057;
   padding-bottom: 15px; }
+
+.close {
+  color: white !important;
+  opacity: 1; }
+
+.close:hover {
+  color: white !important;
+  opacity: 1; }
+
+.modal-title {
+  color: white !important; }

@@ -4,6 +4,7 @@ import {notification} from 'antd'
 import {Link} from 'react-router-dom';
 import Loader from '../../Common/Loader'
 import {getTestById} from "../../../utils/_data";
+import '../session.css'
 
 class ViewModel extends React.Component {
     constructor(props) {

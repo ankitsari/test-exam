@@ -9,6 +9,7 @@ import Loader from '../../Common/Loader'
 import CKEditor from "react-ckeditor-component";
 import {createSession, updateSession, getTestByIdForEdit} from "../../../utils/_data"
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import '../session.css'
 
 const mapStateToProps = state => ({
 });
@@ -235,7 +236,7 @@ class SessionModal extends React.Component {
             <Modal show={isOpen} onHide={onHandle} bsSize={"large"}>
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        {link ?  <h2 style={{color:'white'}}>Token Url</h2> : <h2 style={{color:'white'}}>Create/Update Session</h2>}
+                        {link ?  <h4 style={{color:'white'}}>Token Url</h4> : <h4 style={{color:'white'}}>Create/Update Session</h4>}
                     </Modal.Title>
                 </Modal.Header>
 

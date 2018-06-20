@@ -55,3 +55,14 @@
   .manage-exam table td.column-money, .manage-status table th.column-money,
   .manage-status table td.column-money {
     text-align: right !important; }
+
+.close {
+  color: white !important;
+  opacity: 1; }
+
+.close:hover {
+  color: white !important;
+  opacity: 1; }
+
+.modal-title {
+  color: white !important; }
