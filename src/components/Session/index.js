@@ -1,5 +1,4 @@
 import React, {Component} from 'react'
-import {Link} from 'react-router-dom'
 import swal from 'sweetalert'
 import {connect} from 'react-redux'
 import moment from 'moment'
@@ -12,11 +11,14 @@ import {
     multipleDelete,
     getTestsList,
     getSourceList,
+    getExamsList
 } from "../../utils/_data";
 import SourceInput from '../Common/SourceInput'
 import Loader from '../Common/Loader'
 import './session.css'
 import 'antd/dist/antd.css'
+import SessionModal from "./components/SessionModal";
+import ViewModel from "./components/ViewModel";
 
 const mapStateToProps = state => ({
     testList: state.tests && state.tests.tests,
@@ -41,6 +43,8 @@ class Session extends Component {
             sessionList: [],
             filterList: [],
             examStatusList: [],
+            examList: [],
+            sources: [],
             exams: [],
             sortList: false,
             where: {
@@ -53,16 +57,22 @@ class Session extends Component {
                 order: 'descend',
                 columnKey: '',
             },
-            examStatusError:''
+            examStatusError:'',
+            isSessionModel:'',
+            isSessionView:'',
+            exam_id:'',
+
+            testData: null,
         }
     }
 
     async componentWillMount() {
         try {
-            const [resTest, resSources, examStatusList] = await Promise.all([
+            const [resTest, resSources, examStatusList, examList] = await Promise.all([
                 getTestsList(),
                 getSourceList(),
-                getExamStatusList()
+                getExamStatusList(),
+                getExamsList(),
             ]);
             const testList = resTest && resTest.data || [];
             testList.forEach(test => {
@@ -75,6 +85,7 @@ class Session extends Component {
                 filterList: testList,
                 sessionList: testList,
                 examStatusList: examStatusList || [],
+                examList: examList && examList.data.map(p => ({id: p.testId ,name: p.testTitle})) || [],
                 sources: resSources && resSources.data || [],
                 loading: false,
             }, () => {
@@ -276,10 +287,31 @@ class Session extends Component {
         });
     }
 
+    handleSessionModal = (test) => {
+        if(test){
+            this.setState({
+                isSessionModel: !this.state.isSessionModel,
+                testData: test
+            })
+        }else {
+            this.setState({
+                isSessionModel: !this.state.isSessionModel,
+                testData: null
+            })
+        }
+    };
+
+    handleSessionView = (id) => {
+        this.setState({
+            isSessionView: !this.state.isSessionView,
+            exam_id:id
+        })
+    };
+
     render() {
-        const {filterList, where, examStatusList, selectedRowKeys} = this.state;
-        const {examListError,sourcesListError} =this.props;
-        let {sortedInfo, examStatusError} = this.state;
+        const {filterList, where, examStatusList, selectedRowKeys, isSessionModel, sources, sessionList} = this.state;
+        const {examListError, sourcesListError} = this.props;
+        let {sortedInfo, examStatusError, exam_id, isSessionView} = this.state;
         const rowSelection = {
             onChange: this.onChangeCheck,
             getCheckboxProps: this.getCheckboxProps
@@ -358,11 +390,13 @@ class Session extends Component {
                 width: '15%',
                 render: (text, exam) =>
                     <div className="form-inline">
-                        <Link to={`/session/view/${exam.id}`}
-                              className="btn btn-blue mr-1">View</Link>
+                        <span className="btn btn-blue mr-1"
+                              onClick={() => this.handleSessionView(exam.id)}>View</span>
 
-                        <Link to={{pathname: `/session/edit/${exam.id}`, state: {testId: exam.id}}}
-                              className="btn btn-blue btn-sm mr-1">Edit</Link>
+                        {/*<Link to={{pathname: `/session/edit/${exam.id}`, state: {testId: exam.id}}}*/}
+                              {/*className="btn btn-blue btn-sm mr-1">Edit</Link>*/}
+                        <span onClick={() => this.handleSessionModal(exam)}
+                              className="btn btn-blue btn-sm mr-1">Edit</span>
                         <button className="btn btn-danger btn-sm" onClick={() => this.onDelete(exam.id)}>Delete
                         </button>
                     </div>
@@ -399,7 +433,8 @@ class Session extends Component {
                 <div className="d-flex justify-content-end">
                     <div className="panel panel-default">
                         <div className="panel-heading"><b>configure</b>
-                            <Link to={'/session/create'} style={{float: 'right'}} className="btn btn-blue mb-2">Create new Test Session</Link>
+                            <span style={{float: 'right'}} onClick={() => this.handleSessionModal(null)} className="btn btn-blue mb-2">Create new Test Session</span>
+                            {/*<Link to={'/session/create/250'} style={{float: 'right'}} className="btn btn-blue mb-2">Create new Test Session</Link>*/}
                         </div>
                         <div className="panel-body">
                             <form className="form-inline">
@@ -458,6 +493,19 @@ class Session extends Component {
                 {/*<span style={{color: "red"}}>{this.props.errorMsg.sessionTestsError}</span>*/}
                 <Table rowSelection={rowSelection} columns={columns} dataSource={filterList}
                        onChange={this.handleSortChange}/>
+
+                {isSessionModel && <SessionModal isOpen={isSessionModel}
+                              onHandle={this.handleSessionModal}
+                              sessionList={sessionList}
+                              examStatusList={examStatusList}
+                              sources={this.state.sources}
+                              testData={this.state.testData}
+                              examList={this.state.examList}
+                />}
+                {isSessionView && <ViewModel isOpen={isSessionView}
+                           onHandle={this.handleSessionView}
+                           exam_id={exam_id}
+                />}
             </div>
         );
     }
