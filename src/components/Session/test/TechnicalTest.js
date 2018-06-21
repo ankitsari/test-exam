@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import swal from 'sweetalert';
 import { getExamDetail, submitTechnicalTest } from "../../../utils/_data";
 import Loader from '../../Common/Loader'
+import {notification} from 'antd'
+
 
 class TechnicalTest extends Component {
     constructor(props) {
@@ -17,7 +19,8 @@ class TechnicalTest extends Component {
     }
 
     componentWillMount() {
-        const examDetailId = (this.props.history.location.state && this.props.history.location.state.examDetailId) || 74;
+        debugger
+        const examDetailId = (this.props.history.location.state && this.props.history.location.state.examDetailId);
         if(examDetailId) {
            this.examDetails(examDetailId)
         }
@@ -36,7 +39,10 @@ class TechnicalTest extends Component {
             this.setState({
               loading: false,
             })
-            console.log(err)
+            notification.error({
+                message: err.response.data || 'Please try again.',
+                placement: 'topRight',
+            })
         })
     }
 
@@ -84,6 +90,14 @@ class TechnicalTest extends Component {
         })
     }
 
+
+    notifyError = (err) => {
+        notification.error({
+            message: err.message || 'Please try again.',
+            placement: 'topRight',
+        })
+    };
+
     onSubmit = () => {
       const { test, FileName, Filebase64, examDetailId } = this.state;
       const listQuestionAnswer = [];
@@ -106,7 +120,7 @@ class TechnicalTest extends Component {
       const fields = {
         listQuestionAnswer,
       }
-      if(test.isAttachment) {
+      if(test.isAttachment || test) {
         fields.FileName = FileName
       }
       let validationErrors = {};
@@ -152,7 +166,7 @@ class TechnicalTest extends Component {
             });
         }
       }).catch((err) => {
-        console.log(err)
+          this.notifyError(err);
       })
     }
 
