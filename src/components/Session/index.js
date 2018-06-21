@@ -505,6 +505,7 @@ class Session extends Component {
                 {isSessionView && <ViewModel isOpen={isSessionView}
                            onHandle={this.handleSessionView}
                            exam_id={exam_id}
+                           examStatusList={examStatusList}
                 />}
             </div>
         );
