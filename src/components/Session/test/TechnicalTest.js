@@ -19,10 +19,18 @@ class TechnicalTest extends Component {
     }
 
     componentWillMount() {
-        debugger
         const examDetailId = (this.props.history.location.state && this.props.history.location.state.examDetailId);
-        if(examDetailId) {
-           this.examDetails(examDetailId)
+        if (examDetailId) {
+            this.examDetails(examDetailId)
+        } else {
+            notification.error({
+                message: 'Something is wrong. please contact to administrator.',
+                placement: 'topRight',
+            });
+            this.setState({
+                loading: false,
+                warnMessage: 'Something is wrong. please contact to administrator.'
+            })
         }
     }
     examDetails = (examDetailId) => {
@@ -36,11 +44,13 @@ class TechnicalTest extends Component {
                 })
             }
         }).catch((err) => {
+            const message = err.response && (err.response.data || err.response.statusText) || 'Please try again.';
             this.setState({
-              loading: false,
-            })
+                loading: false,
+                errorMessage: message
+            });
             notification.error({
-                message: err.response.data || 'Please try again.',
+                message: message,
                 placement: 'topRight',
             })
         })
@@ -103,17 +113,17 @@ class TechnicalTest extends Component {
       const listQuestionAnswer = [];
       test && test.questions.length && test.questions.forEach(que => {
         let answer = {};
-        if(this.state[que.id]) {
-          answer = {
-            id: que.id,
-            name: this.state[que.id],
+          if (this.state[que.id]) {
+              answer = {
+                  id: que.id,
+                  name: this.state[que.id],
+              }
+          } else {
+              answer = {
+                  id: que.id,
+                  name: '',
+              }
           }
-        }else {
-          answer = {
-            id: que.id,
-            name: '',
-          }
-        }
         listQuestionAnswer.push(answer);
       });
 
@@ -166,12 +176,14 @@ class TechnicalTest extends Component {
             });
         }
       }).catch((err) => {
-          this.notifyError(err);
+          const resError = err.response;
+          const message = resError && (resError.data || resError.statusText);
+          this.notifyError({message: message || 'something is wrong'});
       })
     }
 
     render() {
-        const { test, errors } = this.state;
+        const { test, errors, warnMessage, errorMessage } = this.state;
         const loading = (
           <Loader/>
         );
@@ -185,44 +197,60 @@ class TechnicalTest extends Component {
                     <h2>Practical Test</h2>
                 </div>
                 <hr/>
-                <div className="test-content row mt-3">
-                    <form className="col-md-12 form-horizontal" >
-                        {test.questions && test.questions.length && test.questions.map((que, i) => (
-                            <div key={i} className="form-group">
+                {
+                    !warnMessage && !errorMessage &&
+                    <div className="test-content row mt-3">
+                        <form className="col-md-12 form-horizontal" >
+                            {test.questions && test.questions.length && test.questions.map((que, i) => (
+                                <div key={i} className="form-group">
                                 <span>
                                     <label><b>Question {i+1}:</b></label>
                                     <ul>
                                         <li id={que.id} dangerouslySetInnerHTML={{ __html: que.name }} />
                                     </ul>
                                 </span>
-                                <label className="control-label mt-3"> <b>Copy and Paste your code:</b></label>
-                                <textarea className="form-control"
-                                          name={que.id}
-                                          value={this.state[que.id] || ''}
-                                          onChange={this.onChange}
-                                          cols="20"
-                                          rows="6" />
-                                {
-                                    errors && errors.listQuestionAnswer && errors.listQuestionAnswer.map(err => (
-                                      err[i] && <small key={i} className="text-danger"> {err[i]}</small>
-                                    ))
-                                }
+                                    <label className="control-label mt-3"> <b>Copy and Paste your code:</b></label>
+                                    <textarea className="form-control"
+                                              name={que.id}
+                                              value={this.state[que.id] || ''}
+                                              onChange={this.onChange}
+                                              cols="20"
+                                              rows="6" />
+                                    {
+                                        errors && errors.listQuestionAnswer && errors.listQuestionAnswer.map(err => (
+                                            err[i] && <small key={i} className="text-danger"> {err[i]}</small>
+                                        ))
+                                    }
+                                </div>
+                            ))}
+                        </form>
+                        <div className="col-md-12">
+                            <div className="form-group">
+                                <label><b>Upload a zip file of your solution:</b></label>
+                                <input type="file" style={{width: 'unset'}} className="form-control-file" name="file" id="File" onChange={this.onChangeFile} />
+                                <small className="text-danger"> {errors.FileName}</small>
                             </div>
-                        ))}
-                    </form>
-                    <div className="col-md-12">
-                        <div className="form-group">
-                            <label><b>Upload a zip file of your solution:</b></label>
-                            <input type="file" style={{width: 'unset'}} className="form-control-file" name="file" id="File" onChange={this.onChangeFile} />
-                            <small className="text-danger"> {errors.FileName}</small>
+                        </div>
+                        <div className="col-md-12">
+                            <div className="form-group actions text-right">
+                                <button className="btn btn-blue btn-sm" onClick={this.onSubmit}>Submit Test Response</button>
+                            </div>
                         </div>
                     </div>
-                    <div className="col-md-12">
-                        <div className="form-group actions text-right">
-                            <button className="btn btn-blue btn-sm" onClick={this.onSubmit}>Submit Test Response</button>
-                        </div>
+                }
+                {
+                    warnMessage &&
+                    <div className="mt-3 alert alert-warning">
+                        <strong>{warnMessage}</strong>
                     </div>
-                </div>
+                }
+                {
+                    errorMessage &&
+                    <div className="mt-3 alert alert-danger">
+                        <strong>Error! {errorMessage}</strong>
+                    </div>
+                }
+
             </div>
         );
     }

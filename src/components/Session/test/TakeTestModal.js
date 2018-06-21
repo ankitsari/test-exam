@@ -15,7 +15,7 @@ class TakeTestModal extends Component {
         <Modal show={this.props.show} onHide={this.props.handleModal} bsSize={"small"}>
             <Modal.Header closeButton>
                 <Modal.Title>
-                    Start Techincal Test
+                    Start Technical Test
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>

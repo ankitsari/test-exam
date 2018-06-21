@@ -15,28 +15,42 @@ class TakeTest extends Component {
     }
 
     componentWillMount() {
-        const pathname = window.location.pathname;
-        const token = pathname.split('/')[2];
+        const {params} = this.props.match;
+        const token = params && params.token;
         if(token) {
             checkValidateToken(token).then((res) => {
-                if(res && res.firstName) {
+                if (res && res.firstName) {
                     this.setState({
-                      user: res,
-                      loading: false,
+                        user: res,
+                        loading: false,
                     })
-                }else {
+                } else {
                     this.setState({
-                      error: 'Token Invalid',
-                      loading: false,
+                        error: 'Token Invalid',
+                        loading: false,
                     })
                 }
 
             }).catch(err => {
-              this.setState({
-                error: err.response.data,
-                loading: false,
-              })
+                const message = err.response && err.response.data;
+                if (message === 'Test completed') {
+                    this.setState({
+                        error: '',
+                        successMessage: message,
+                        loading: false,
+                    })
+                } else {
+                    this.setState({
+                        error: message,
+                        loading: false,
+                    })
+                }
             });
+        } else {
+            this.setState({
+                error: 'please contact to administrator.',
+                loading: false,
+            })
         }
     }
 
@@ -46,7 +60,7 @@ class TakeTest extends Component {
         })
     }
     render() {
-      const {modal, user, error} = this.state;
+      const {modal, user, error, successMessage} = this.state;
       const loading = (
         <Loader/>
       );
@@ -65,8 +79,15 @@ class TakeTest extends Component {
                     <TakeTestModal handleModal={this.handleModal} ExamDetailId={user.examDetailId} show={modal} />
                 </div>
             : <div>
-                <h3 className="text-center">Refresh token invalid or expired</h3>
-                { error && <p className='text-center text-danger'>{error}</p> }
+                    {
+                        error ? <div data-life="2" className="alert alert-danger">
+                                <strong>Error!</strong> {error}.
+                            </div>
+                            : successMessage &&
+                            <div data-life="2" className="alert alert-success">
+                                <strong>Test already taken</strong>
+                            </div>
+                    }
               </div>
             }
         </div>
