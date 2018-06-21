@@ -49,12 +49,10 @@ class SessionModal extends React.Component {
 
     async componentDidMount() {
         let sessionId = this.props.testData && this.props.testData.id;
-
         try{
             if(sessionId) {
                 const [test] = await Promise.all([
                     getTestByIdForEdit(sessionId)
-
                 ]);
                 this.setState({
                     test: test || {},
@@ -79,14 +77,13 @@ class SessionModal extends React.Component {
                     fields:{
                         firstName: '',
                         lastName:'',
-                        examStatus:'',
                         source:'',
                         notes:'',
-
+                        email:'',
+                        testId:''
                     }
                 })
             }
-
         }catch(err) {
             this.notifyError(err);
             this.setState({
@@ -187,9 +184,13 @@ class SessionModal extends React.Component {
                     }
                 });
             }).catch((err) => {
-                console.log(err);
-                this.notifyError(err);
-                self.props.onHandle();
+                this.setState({
+                    createError:err.message
+                });
+                // this.notifyError(err);
+                if(!err){
+                    self.props.onHandle();
+                }
             })
         } else {
             createSession(fields).then((res) => {
@@ -204,12 +205,20 @@ class SessionModal extends React.Component {
                 const res = err.response && err.response.data;
                 if (isObject(res)) {
                     Object.keys(res).forEach(p => {
-                        this.notifyError({message: res[p]});
+                        // this.notifyError({message: res[p]});
+                        this.setState({
+                            createError:res[p]
+                        })
                     })
                 } else {
-                    this.notifyError(err);
+                    this.setState({
+                        createError:err.message
+                    })
+                    // this.notifyError(err);
                 }
-                self.props.onHandle();
+                if(!err){
+                    self.props.onHandle();
+                }
             })
         }
     };
@@ -228,19 +237,20 @@ class SessionModal extends React.Component {
     };
 
     render() {
-        const {link, fields, errors, loading} = this.state;
+        const {link, fields, errors, loading, createError} = this.state;
         const {onHandle, isOpen ,testData} = this.props;
         return (
             <Modal show={isOpen} onHide={onHandle} bsSize={"large"}>
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        {link ?  <h4 style={{color:'white'}}>Token Url</h4> : <h4 style={{color:'white'}}>Create/Update Session</h4>}
+                        {link ?  <p style={{color:'white'}}>Token Url</p> : <p style={{color:'white'}}> {!testData ? <p>Create Session</p> : <p>Update Session</p>}</p>}
                     </Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
                     { !loading ?
-                        link ? <div className="row">
+                        link ?
+                        <div className="row">
                             <div className="col-md-12 col-sm-8 col-xs-12 text-center">
                                 <label className="text-left col-md-12 control-label mt-5"><b>Link to sent</b></label>
                                 <input type="text" id="txtUrl" className="form-control" value={link}
@@ -259,116 +269,116 @@ class SessionModal extends React.Component {
                             </div>
                         </div> :
                             <div className="form-horizontal">
-                            <div className="form-group row">
-                                <label className="col-md-3 col-form-label">First Name</label>
-                                <div className="col-md-9">
-                                    <input type="text"
-                                           name="firstName"
-                                           className="form-control"
-                                           value={fields.firstName || ''}
-                                           onChange={this.handleChange}/>
-                                    <small className="error">{errors.firstName}</small>
+                                {createError && <div  data-spy="marquee" data-life="2" className="alert alert-danger">
+                                    <strong>Danger!</strong> {createError}.
+                                </div>}
+                                <div className="form-group row">
+                                    <label className="col-md-3 col-form-label">First Name</label>
+                                    <div className="col-md-9">
+                                        <input type="text"
+                                               name="firstName"
+                                               className="form-control"
+                                               value={fields.firstName || ''}
+                                               onChange={this.handleChange}/>
+                                        <small className="error">{errors.firstName}</small>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="form-group row">
-                                <label className="col-md-3 col-form-label">Last Name</label>
-                                <div className="col-md-9">
-                                    <input type="text"
-                                           name="lastName"
-                                           className="form-control" value={fields.lastName}
-                                           onChange={this.handleChange}/>
-                                    <small className="error">{errors.lastName}</small>
+                                <div className="form-group row">
+                                    <label className="col-md-3 col-form-label">Last Name</label>
+                                    <div className="col-md-9">
+                                        <input type="text"
+                                               name="lastName"
+                                               className="form-control" value={fields.lastName}
+                                               onChange={this.handleChange}/>
+                                        <small className="error">{errors.lastName}</small>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {!testData && <div className="form-group row">
-                                <label className="col-md-3 col-form-label">Email</label>
-                                <div className="col-md-9">
-                                    <input type="text"
-                                           name="email"
+                                {!testData && <div className="form-group row">
+                                    <label className="col-md-3 col-form-label">Email</label>
+                                    <div className="col-md-9">
+                                        <input type="text"
+                                               name="email"
                                            className="form-control" value={this.state.fields.email}
-                                           onChange={this.handleChange}/>
-                                    <small className="error">{errors.email}</small>
-                                </div>
-                            </div>}
+                                               onChange={this.handleChange}/>
+                                        <small className="error">{errors.email}</small>
+                                    </div>
+                                </div>}
 
-                            {testData &&
-                            <div className="form-group row">
-                                <label className="col-md-3 col-form-label">Status</label>
-                                <div className="col-sm-9">
-                                    <SourceInput className="form-control"
-                                                 value={(fields.examStatus && parseInt(fields.examStatus, 10)) || 0}
-                                                 onChange={this.handleChange}
-                                                 sources={this.props.examStatusList}
-                                                 name="examStatus"
-                                    />
-                                    <small className="error">{errors.examStatus}</small>
+                                {testData &&
+                                <div className="form-group row">
+                                    <label className="col-md-3 col-form-label">Status</label>
+                                    <div className="col-sm-9">
+                                        <SourceInput className="form-control"
+                                                     value={(fields.examStatus && parseInt(fields.examStatus, 10)) || 0}
+                                                     onChange={this.handleChange}
+                                                     sources={this.props.examStatusList}
+                                                     name="examStatus"
+                                        />
+                                        <small className="error">{errors.examStatus}</small>
+                                    </div>
                                 </div>
-                            </div>
-                            }
+                                }
 
-                            <div className="form-group row">
-                                <label className="col-md-3 col-form-label">Notes</label>
-                                <div className="col-md-9">
-                                    <textarea className="form-control"
-                                              name="notes"
-                                              value={fields.notes || ''}
-                                              onChange={this.handleChange}/>
+                                <div className="form-group row">
+                                    <label className="col-md-3 col-form-label">Notes</label>
+                                    <div className="col-md-9">
+                                        <textarea className="form-control"
+                                                  name="notes"
+                                                  value={fields.notes || ''}
+                                                  onChange={this.handleChange}/>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="form-group row">
-                                <label className="col-md-3 col-form-label">Source</label>
-                                <div className="col-md-9">
-                                    <SourceInput className="form-control"
-                                                 name="source"
-                                                 value={parseInt(fields.source, 10).toString()}
-                                                 onChange={this.handleChange}
-                                                 sources={this.props.sources}
-                                    />
-                                    <small className="error">{errors.source}</small>
+                                <div className="form-group row">
+                                    <label className="col-md-3 col-form-label">Source</label>
+                                    <div className="col-md-9">
+                                        <SourceInput className="form-control"
+                                                     name="source"
+                                                     value={parseInt(fields.source, 10).toString()}
+                                                     onChange={this.handleChange}
+                                                     sources={this.props.sources}
+                                        />
+                                        <small className="error">{errors.source}</small>
+                                    </div>
                                 </div>
-                            </div>
 
-
-                            <div className="form-group row">
-                                <label className="col-md-3 col-form-label">Test</label>
-                                <div className="col-md-9">
-                                    <SourceInput className="form-control"
-                                                 name="testId"
-                                                 value={parseInt(fields.testId, 10).toString()}
-                                                 onChange={this.handleChange}
-                                                 sources={this.props.examList}
-                                    />
-                                    <small className="error">{errors.testId}</small>
+                                <div className="form-group row">
+                                    <label className="col-md-3 col-form-label">Test</label>
+                                    <div className="col-md-9">
+                                        <SourceInput className="form-control"
+                                                     name="testId"
+                                                     value={parseInt(fields.testId, 10).toString()}
+                                                     onChange={this.handleChange}
+                                                     sources={this.props.examList}
+                                        />
+                                        <small className="error">{errors.testId}</small>
+                                    </div>
                                 </div>
-                            </div>
-                            {
-                                testData ? fields.questionsAnswerList && fields.questionsAnswerList.length > 0 && fields.questionsAnswerList.map((question, i) => {
-                                    return (
-                                        <div key={i} className="form-group row mt-5">
-                                            <label className="col-sm-12">Question {i + 1}</label>
-                                            <div className="col-sm-12"
-                                                 dangerouslySetInnerHTML={{__html: question.question}}/>
-                                            <label className="col-sm-12"> Answer {i + 1} </label>
-                                            <div className="col-sm-12">
-                                                <CKEditor
-                                                    activeClass="p10"
-                                                    data={question.id}
-                                                    events={{
-                                                        "change": (e) => this.onQuestion(e, question.id)
-                                                    }}
-                                                    content={question.answer}/>
+                                {
+                                    testData ? fields.questionsAnswerList && fields.questionsAnswerList.length > 0 && fields.questionsAnswerList.map((question, i) => {
+                                        return (
+                                            <div key={i} className="form-group row mt-5">
+                                                <label className="col-sm-3">Question {i + 1}</label>
+                                                <div className="col-sm-9"
+                                                     style={{overflowX: 'auto', maxHeight: '380px'}}
+                                                     dangerouslySetInnerHTML={{__html: question.question}}/>
+                                                <label className="col-sm-3"> Answer {i + 1} </label>
+                                                <div className="col-sm-9">
+                                                    <CKEditor
+                                                        activeClass="p10"
+                                                        data={question.id}
+                                                        events={{
+                                                            "change": (e) => this.onQuestion(e, question.id)
+                                                        }}
+                                                        content={question.answer}/>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )
-                                })
-                                    : null
-                            }
-
-                        </div>
+                                        )
+                                    }) : null
+                                }
+                            </div>
                         :<Loader/>
-
                     }
                 </Modal.Body>
 
