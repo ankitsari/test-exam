@@ -58,18 +58,17 @@ class SessionModal extends React.Component {
                 ]);
                 this.setState({
                     test: test || {},
-                    sessionId: !sessionId || null,
+                    sessionId: sessionId || null,
                     loading: false,
                     fields:{
-
+                        Id: sessionId,
                         firstName:test.firstName,
                         lastName:test.lastName,
-
+                        examStatus:test.examStatus,
                         source:test.source,
                         notes:test.notes,
                         questionsAnswerList:test.questionsAnswerList,
-
-
+                        testId:test.testId,
                     }
                 })
             } else {
@@ -189,7 +188,6 @@ class SessionModal extends React.Component {
                 });
             }).catch((err) => {
                 console.log(err);
-
                 this.notifyError(err);
                 self.props.onHandle();
             })
