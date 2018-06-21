@@ -153,7 +153,7 @@ export async function createSession(data) {
 
 export async function updateSession(data) {
   const url = utils.getURL('/CreateSessionApi/Update');
-  const res = await axios.put(url, data, config())
+  const res = await axios.put(url, data)
   return res.data;
 }
 

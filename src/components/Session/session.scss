@@ -102,3 +102,6 @@ label {
 .custom-modal {
   width: 90%
 }
+.ant-notification {
+  z-index: 100000 !important;
+}

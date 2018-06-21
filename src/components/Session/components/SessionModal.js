@@ -9,6 +9,7 @@ import Loader from '../../Common/Loader'
 import CKEditor from "react-ckeditor-component";
 import {createSession, updateSession, getTestByIdForEdit} from "../../../utils/_data"
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import {urlDomain} from '../../../utils/common';
 import '../session.css'
 
 const mapStateToProps = state => ({
@@ -85,10 +86,13 @@ class SessionModal extends React.Component {
                 })
             }
         }catch(err) {
-            this.notifyError(err);
+            const resError = err.response;
+            const message = resError && (resError.data || resError.statusText) || 'please try again.';
+            this.notifyError({message: message || 'please try again'});
             this.setState({
                 loading: false,
-            })
+            });
+            this.props.onHandle();
         }
     }
 
@@ -174,7 +178,6 @@ class SessionModal extends React.Component {
             return;
         }
         if (this.state.sessionId) {
-
             updateSession(fields).then((res) => {
                 swal("Record updated successfully", {
                     icon: "success",
@@ -184,13 +187,12 @@ class SessionModal extends React.Component {
                     }
                 });
             }).catch((err) => {
+                const mError = err.response;
+                const message = mError && (mError.data || mError.statusText) || 'something is wrong'
                 this.setState({
-                    createError:err.message
+                    createError: message
                 });
-                // this.notifyError(err);
-                if(!err){
-                    self.props.onHandle();
-                }
+                this.notifyError({message});
             })
         } else {
             createSession(fields).then((res) => {
@@ -198,26 +200,22 @@ class SessionModal extends React.Component {
                     icon: "success",
                 }).then(() => {
                     this.setState({
-                        link: `http://${window.location.host}/${res}`
+                        link: `${urlDomain}/${res}`
                     })
                 });
             }).catch((err) => {
-                const res = err.response && err.response.data;
+                const res = err.response && (err.response.data || err.response.statusText);
                 if (isObject(res)) {
                     Object.keys(res).forEach(p => {
-                        // this.notifyError({message: res[p]});
                         this.setState({
                             createError:res[p]
                         })
                     })
                 } else {
                     this.setState({
-                        createError:err.message
+                        createError: res
                     })
-                    // this.notifyError(err);
-                }
-                if(!err){
-                    self.props.onHandle();
+                    this.notifyError({message: res});
                 }
             })
         }
