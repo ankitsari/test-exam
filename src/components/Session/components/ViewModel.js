@@ -66,8 +66,10 @@ class ViewModel extends React.Component {
             StatusId: e.target.value,
         };
         const textName = e.target.selectedOptions[0].innerText;
+        const statusId = e.target.value;
         updateStatusMultiple(data).then(res => {
             if (res && res.isSuccess) {
+                this.props.updateSession({examStatus: statusId, id: testId});
                 this.setState({
                     test: {
                         ...test,

@@ -55,6 +55,8 @@ class SessionModal extends React.Component {
                 const [test] = await Promise.all([
                     getTestByIdForEdit(sessionId)
                 ]);
+                const currentSource = this.props.sources && this.props.sources.find(p => p.id == test.source)
+                const sourceText = currentSource && currentSource.name;
                 this.setState({
                     test: test || {},
                     sessionId: sessionId || null,
@@ -68,6 +70,7 @@ class SessionModal extends React.Component {
                         notes:test.notes,
                         questionsAnswerList:test.questionsAnswerList,
                         testId:test.testId,
+                        sourceText: sourceText && sourceText || '',
                     }
                 })
             } else {
@@ -150,15 +153,20 @@ class SessionModal extends React.Component {
     };
 
     handleChange = (e) => {
+        const fields = {
+            ...this.state.fields,
+            [e.target.name]: e.target.value,
+        }
+        if (e.target.name === 'source') {
+            fields.sourceText = e.target.selectedOptions[0].innerText;
+            debugger;
+        }
         this.setState({
             errors: {
                 ...this.state.errors,
                 [e.target.name]: this.validate(e.target.name, e.target.value),
             },
-            fields: {
-                ...this.state.fields,
-                [e.target.name]: e.target.value,
-            }
+            fields
         })
     };
 
@@ -182,7 +190,14 @@ class SessionModal extends React.Component {
                 swal("Record updated successfully", {
                     icon: "success",
                 }).then((msg) => {
+                    const newSession = {
+                        ...fields,
+                        id: fields.Id,
+                        name: `${fields.firstName} ${fields.lastName}`,
+                        source: fields.sourceText || '',
+                    };
                     if (msg) {
+                        this.props.updateSession(newSession);
                         self.props.onHandle();
                     }
                 });

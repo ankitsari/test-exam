@@ -106,6 +106,32 @@ class Session extends Component {
         })
     };
 
+    updateSession = (session) => {
+        let {sessionList, filterList} = this.state;
+       const newSessionList =  sessionList.map(p => {
+            if (p.id === session.id) {
+                return {
+                    ...p,
+                    ...session,
+                }
+            }
+            return p;
+        })
+        const newFilterList =  filterList.map(p => {
+            if (p.id === session.id) {
+                return {
+                    ...p,
+                    ...session,
+                }
+            }
+            return p;
+        })
+        this.setState({
+            sessionList: newSessionList,
+            filterList: newFilterList
+        })
+    };
+
     onFilterChange = (e) => {
         const name = e.target.name;
         const value = e.target.value;
@@ -496,6 +522,7 @@ class Session extends Component {
 
                 {isSessionModel && <SessionModal isOpen={isSessionModel}
                               onHandle={this.handleSessionModal}
+                              updateSession={this.updateSession}
                               sessionList={sessionList}
                               examStatusList={examStatusList}
                               sources={this.state.sources}
@@ -504,6 +531,7 @@ class Session extends Component {
                 />}
                 {isSessionView && <ViewModel isOpen={isSessionView}
                            onHandle={this.handleSessionView}
+                           updateSession={this.updateSession}
                            exam_id={exam_id}
                            examStatusList={examStatusList}
                 />}
