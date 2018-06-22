@@ -6,6 +6,7 @@ import {getTestById, updateStatusMultiple} from "../../../utils/_data";
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import '../session.css'
 import { urlDomain, apiUrl } from "../../../utils/common"
+import {notification} from 'antd'
 
 class ViewModel extends React.Component {
     constructor(props) {
@@ -17,6 +18,20 @@ class ViewModel extends React.Component {
             examStatus:''
         }
     }
+
+    notifySuccess = () => {
+        notification.success({
+            message: `Update status success : ${this.state.test.examStatus}`,
+            placement: 'topRight',
+        })
+    };
+
+    notifyError = (err) => {
+        notification.error({
+            message: err.response && (err.response.data  || err.response.statusText) || 'please try again',
+            placement: 'topRight',
+        })
+    };
 
     componentWillMount() {
         const testId = this.props.exam_id;
@@ -33,31 +48,38 @@ class ViewModel extends React.Component {
                     loading: false,
                     statusChangeError:err.response.data,
                     test: {}
-                })
+                });
+                this.notifyError(err);
             })
         }
     }
 
     print = () => {
         const {test} = this.state;
-        var mywindow = window.open('', 'PRINT', 'height=400,width=600');
-
-        mywindow.document.write('<html><head><title>' + "View Session" + '</title>');
-        mywindow.document.write('</head><body >');
-        mywindow.document.write('<h1>' + "View Session"  + '</h1>');
-        mywindow.document.write('<h3>' + "Name" + test.name  + '</h3>');
-        mywindow.document.write('<h3>' + "Time Taken" + test.timetaken  + '</h3>');
-        mywindow.document.write('<h3>' + "Source" + test.timetaken  + '</h3>');
-        mywindow.document.write(document.getElementById("print1").innerHTML);
+        let mywindow = window.open('', 'PRINT', 'height=800,width=1300');
+        mywindow.document.write('<html style="border-style: solid"><head><title>' + "View Session" + '</title>');
+        mywindow.document.write('</head><body>');
+        mywindow.document.write('<h1 style="color: #6b242f;">' + "View Session" + '</h1>');
+        mywindow.document.write('<hr/>');
+        mywindow.document.write('<p>' + "Name:" + "&emsp;" + test.name + '</p>');
+        mywindow.document.write('<p>' + "Time Taken:" + "&emsp;" + test.timetaken + '</p>');
+        mywindow.document.write('<p>' + "Source:" + "&emsp;" + test.source + '</p>');
+        mywindow.document.write('<p>' + "Notes:" + "&emsp;" + test.notes + '</p>');
+        mywindow.document.write('<hr/>');
+        mywindow.document.write(document.getElementById("queNumber").innerHTML);
+        mywindow.document.write('<hr/>');
+        mywindow.document.write(document.getElementById("question").innerHTML);
+        mywindow.document.write('<hr/>');
+        mywindow.document.write(document.getElementById("ansNumber").innerHTML);
+        mywindow.document.write('<hr/>');
+        mywindow.document.write(document.getElementById("answer").innerHTML);
         mywindow.document.write('</body></html>');
-
         mywindow.document.close();
         mywindow.focus();
-
         mywindow.print();
         mywindow.close();
         return true;
-    }
+    };
 
     handleChange = (e) => {
         let {testId, test} = this.state;
@@ -76,45 +98,45 @@ class ViewModel extends React.Component {
                         examStatus: textName,
                     },
                     Status: null,
-                    successMsg:"success update",
+                    // successMsg:"success update",
                     statusChangeError: ''
-
                 })
+                this.notifySuccess(res);
             }
         }).catch(err => {
-            const resData = err.response && err.response.statusText;
+            // const resData = err.response && err.response.statusText;
             this.setState({
                 successMsg:"",
-                statusChangeError: resData,
+                // statusChangeError: resData,
                 Status:null
             })
+            this.notifyError(err);
         });
     };
 
     render() {
-
         const {isOpen, onHandle} = this.props;
-        const {test, loading, statusChangeError, Status ,successMsg} = this.state;
+        const {test, loading, statusChangeError, Status} = this.state;
         let uniqueTestId = `${urlDomain}/ValidateToken/${test.uniqueTestId}`
         return (
-            <Modal show={isOpen} onHide={onHandle} bsSize={"lg"} dialogClassName="custom-modal ">
+            <Modal show={isOpen} onHide={onHandle} bsSize={"lg"} dialogClassName="custom-modal">
                 <Modal.Header closeButton>
                         View Session
                 </Modal.Header>
-                <Modal.Body id="print1">
-                    {statusChangeError && <div data-life="2" className="alert alert-danger">
-                        <strong>Danger!</strong>  {statusChangeError}.
-                    </div>}
-                    {successMsg &&
-                        <div className="alert alert-success">
-                            <strong>Success!</strong> {successMsg}.
-                        </div>
-                    }
+                <Modal.Body>
+                    {/*{statusChangeError && <div data-life="2" className="alert alert-danger">*/}
+                        {/*<strong>Danger!</strong>  {statusChangeError}.*/}
+                    {/*</div>}*/}
+                    {/*{successMsg &&*/}
+                        {/*<div className="alert alert-success">*/}
+                            {/*<strong>Success!</strong> {successMsg}.*/}
+                        {/*</div>*/}
+                    {/*}*/}
                     {
                         !loading ? <div className="container admin-view">
-                            <div className="row mt-2">
-                                <div className=' col-md-8'>
-                                    <div className='row'>
+                            <div className="row">
+                                <div className='col-md-8'>
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Name:</label>
                                         </div>
@@ -122,7 +144,7 @@ class ViewModel extends React.Component {
                                             {test.name}
                                         </div>
                                     </div>
-                                    <div className='row'>
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Date Created:</label>
                                         </div>
@@ -130,7 +152,8 @@ class ViewModel extends React.Component {
                                             {test.dateCreated}
                                         </div>
                                     </div>
-                                    <div className='row'>
+
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Test Start:</label>
                                         </div>
@@ -138,7 +161,7 @@ class ViewModel extends React.Component {
                                             {test.testStart}
                                         </div>
                                     </div>
-                                    <div className='row'>
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Test End:</label>
                                         </div>
@@ -146,7 +169,7 @@ class ViewModel extends React.Component {
                                             {test.testEnd}
                                         </div>
                                     </div>
-                                    <div className='row'>
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Time Taken:</label>
                                         </div>
@@ -154,14 +177,14 @@ class ViewModel extends React.Component {
                                             {test.timetaken}
                                         </div>
                                     </div>
-                                    <div className='row'>
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Status:</label>
                                         </div>
                                         <div className='col-sm-9'>
 
                                             {
-                                                !Status &&
+                                                !statusChangeError && (!Status &&
                                                 <div>
                                                     <span>{test.examStatus}</span>
                                                     <div className="btn-group btn-group-xs">
@@ -170,7 +193,7 @@ class ViewModel extends React.Component {
                                                                 style={{marginLeft: 30}}>Change Status
                                                         </button>
                                                     </div>
-                                                </div>
+                                                </div>)
                                             }
 
                                             {
@@ -185,7 +208,7 @@ class ViewModel extends React.Component {
 
                                         </div>
                                     </div>
-                                    <div className='row'>
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Source:</label>
                                         </div>
@@ -193,7 +216,7 @@ class ViewModel extends React.Component {
                                             {test.source}
                                         </div>
                                     </div>
-                                    <div className='row'>
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Test Title:</label>
                                         </div>
@@ -201,7 +224,7 @@ class ViewModel extends React.Component {
                                             {test.testTitleName}
                                         </div>
                                     </div>
-                                    <div className='row'>
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Test Link:</label>
                                         </div>
@@ -230,7 +253,7 @@ class ViewModel extends React.Component {
                                             }
                                         </div>
                                     </div>
-                                    <div className='row'>
+                                    <div className='row mb-3'>
                                         <div className='col-sm-3'>
                                             <label>Notes:</label>
                                         </div>
@@ -243,28 +266,30 @@ class ViewModel extends React.Component {
                                             <a href={`${apiUrl}/TestFiles/${test.linktozip}`} target="_blank">Link to Zip file</a>
                                         </div>
                                     </div>}
-                                    <div className='row'>
-                                        <div className='col-sm-3'>
-                                            <label>Code:</label>
+                                    {
+                                        test.timetaken && <div className='row mb-3'>
+                                            <div className='col-sm-3'>
+                                                <label>Code:</label>
+                                            </div>
+                                            <div className='col-sm-9'>
+                                                <button className="btn btn-blue" onClick={this.print}>print</button>
+                                            </div>
                                         </div>
-                                        <div className='col-sm-9'>
-                                            <button className="btn btn-blue" onClick={this.print}>print</button>
-                                        </div>
-                                    </div>
+                                    }
                                     {
                                         test && test.questionAndAnswerList && test.questionAndAnswerList.length ? test.questionAndAnswerList.map((answer, i) => (
                                             <div key={i}>
-                                                <div className='row'>
+                                                <div className='row mb-3'>
                                                     <div className='col-sm-3'>
-                                                        <label>Question {i+1}:</label>
+                                                        <label id="queNumber">Question {i+1}:</label>
                                                     </div>
-                                                    <div className='col-sm-9' style={{overflowX: 'auto', maxHeight: '380px'}} dangerouslySetInnerHTML={{ __html: answer.question }} />
+                                                    <div className='col-sm-9' id="question" style={{overflowX: 'auto', maxHeight: '380px'}} dangerouslySetInnerHTML={{ __html: answer.question }} />
                                                 </div>
                                                 <div className='row'>
                                                     <div className='col-sm-3'>
-                                                        <label>Answer {i+1} :</label>
+                                                        <label id="ansNumber">Answer {i+1} :</label>
                                                     </div>
-                                                    <div className='col-sm-9' dangerouslySetInnerHTML={{ __html: answer.answer }} />
+                                                    <div className='col-sm-9' id="answer" dangerouslySetInnerHTML={{ __html: answer.answer }} />
                                                 </div>
                                             </div>
                                         )): null
