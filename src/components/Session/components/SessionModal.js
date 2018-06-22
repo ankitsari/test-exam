@@ -123,7 +123,7 @@ class SessionModal extends React.Component {
             case 'email':
                 if (!value) {
                     return 'Email is Required';
-                } else if (!value.match(/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/)) {
+                } else if (!value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
                     return 'Email is invalid';
                 } else {
                     return '';
