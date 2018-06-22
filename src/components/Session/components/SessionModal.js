@@ -68,7 +68,7 @@ class SessionModal extends React.Component {
                         examStatus:test.examStatus,
                         source:test.source,
                         notes:test.notes,
-                        questionsAnswerList:test.questionsAnswerList,
+                        listQuestionAnswer:test.questionsAnswerList,
                         testId:test.testId,
                         sourceText: sourceText && sourceText || '',
                     }
@@ -186,6 +186,9 @@ class SessionModal extends React.Component {
             return;
         }
         if (this.state.sessionId) {
+            if (fields && fields.listQuestionAnswer && fields.listQuestionAnswer.length) {
+                fields.listQuestionAnswer.forEach(p => p.question && delete p.question);
+            }
             updateSession(fields).then((res) => {
                 swal("Record updated successfully", {
                     icon: "success",
@@ -221,10 +224,12 @@ class SessionModal extends React.Component {
             }).catch((err) => {
                 const res = err.response && (err.response.data || err.response.statusText);
                 if (isObject(res)) {
+                    const fieldsError = []
                     Object.keys(res).forEach(p => {
-                        this.setState({
-                            createError:res[p]
-                        })
+                        fieldsError.push(res[p])
+                    })
+                    this.setState({
+                        createError: fieldsError[0]
                     })
                 } else {
                     this.setState({
@@ -239,13 +244,14 @@ class SessionModal extends React.Component {
     onQuestion = (e, queId) => {
         const { fields } = this.state;
         const answerItem = e.editor.getData();
-        fields.questionsAnswerList && fields.questionsAnswerList.length && fields.questionsAnswerList.forEach((answer) => {
-            if(answer.id === queId) {
+        debugger;
+        fields.listQuestionAnswer && fields.listQuestionAnswer.length && fields.listQuestionAnswer.forEach((answer) => {
+            if (answer.answerId === queId) {
                 answer.answer = answerItem
             }
         })
         this.setState({
-            answerItem
+            fields
         })
     };
 
@@ -283,7 +289,7 @@ class SessionModal extends React.Component {
                         </div> :
                             <div className="form-horizontal">
                                 {createError && <div  data-spy="marquee" data-life="2" className="alert alert-danger">
-                                    <strong>Danger!</strong> {createError}.
+                                    <strong>Error!</strong> {createError}.
                                 </div>}
                                 <div className="form-group row">
                                     <label className="col-md-3 col-form-label">First Name</label>
@@ -369,7 +375,7 @@ class SessionModal extends React.Component {
                                     </div>
                                 </div>
                                 {
-                                    testData ? fields.questionsAnswerList && fields.questionsAnswerList.length > 0 && fields.questionsAnswerList.map((question, i) => {
+                                    testData ? fields.listQuestionAnswer && fields.listQuestionAnswer.length > 0 && fields.listQuestionAnswer.map((question, i) => {
                                         return (
                                             <div key={i} className="form-group row mt-5">
                                                 <label className="col-sm-3">Question {i + 1}</label>
@@ -382,7 +388,7 @@ class SessionModal extends React.Component {
                                                         activeClass="p10"
                                                         data={question.id}
                                                         events={{
-                                                            "change": (e) => this.onQuestion(e, question.id)
+                                                            "change": (e) => this.onQuestion(e, question.answerId)
                                                         }}
                                                         content={question.answer}/>
                                                 </div>
