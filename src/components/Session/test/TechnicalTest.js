@@ -2,13 +2,14 @@ import React, {Component} from 'react';
 import swal from 'sweetalert';
 import { getExamDetail, submitTechnicalTest } from "../../../utils/_data";
 import Loader from '../../Common/Loader'
-import {notification} from 'antd'
+import {notification, Button} from 'antd'
 
 
 class TechnicalTest extends Component {
     constructor(props) {
         super(props);
         this.state = {
+          btnLoading:false,
           Filebase64: '',
           FileName: '',
           test: [],
@@ -109,7 +110,7 @@ class TechnicalTest extends Component {
     };
 
     onSubmit = () => {
-      const { test, FileName, Filebase64, examDetailId } = this.state;
+      const { test, FileName, Filebase64, examDetailId ,btnLoading} = this.state;
       const listQuestionAnswer = [];
       test && test.questions.length && test.questions.forEach(que => {
         let answer = {};
@@ -165,8 +166,12 @@ class TechnicalTest extends Component {
         Questions: listQuestionAnswer
       };
       const _this = this;
+      this.setState({btnLoading: true})
       submitTechnicalTest(practicalTest).then((res) => {
         if(res) {
+            this.setState({
+                btnLoading: false
+            });
             swal("Thank You", {
                 icon: "success",
             }).then(() => {
@@ -176,11 +181,14 @@ class TechnicalTest extends Component {
             });
         }
       }).catch((err) => {
+          this.setState({
+              btnLoading: false
+          });
           const resError = err.response;
           const message = resError && (resError.data || resError.statusText);
           this.notifyError({message: message || 'something is wrong'});
       })
-    }
+    };
 
     render() {
         const { test, errors, warnMessage, errorMessage } = this.state;
@@ -233,7 +241,9 @@ class TechnicalTest extends Component {
                         </div>
                         <div className="col-md-12">
                             <div className="form-group actions text-right">
-                                <button className="btn btn-blue btn-sm" onClick={this.onSubmit}>Submit Test Response</button>
+                                <Button type="primary" loading={this.state.btnLoading} onClick={this.onSubmit}>
+                                    Submit Test Response
+                                </Button>
                             </div>
                         </div>
                     </div>

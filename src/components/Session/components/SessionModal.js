@@ -1,9 +1,9 @@
 import React from 'react';
-import {Modal, Button} from 'react-bootstrap';
+import {Modal} from 'react-bootstrap';
 import {isObject} from 'lodash';
 import SourceInput from '../../Common/SourceInput'
 import swal from 'sweetalert';
-import {notification} from 'antd'
+import {notification, Button} from 'antd'
 import {connect} from 'react-redux';
 import Loader from '../../Common/Loader'
 import CKEditor from "react-ckeditor-component";
@@ -21,6 +21,7 @@ class SessionModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            btnLoading: false,
             loading: true,
             copied: false,
             fields: {
@@ -185,11 +186,15 @@ class SessionModal extends React.Component {
             this.setState({errors: validationErrors});
             return;
         }
+        this.setState({btnLoading: true})
         if (this.state.sessionId) {
             if (fields && fields.listQuestionAnswer && fields.listQuestionAnswer.length) {
                 fields.listQuestionAnswer.forEach(p => p.question && delete p.question);
             }
             updateSession(fields).then((res) => {
+                this.setState({
+                    btnLoading: false
+                })
                 swal("Record updated successfully", {
                     icon: "success",
                 }).then((msg) => {
@@ -208,16 +213,21 @@ class SessionModal extends React.Component {
                 const mError = err.response;
                 const message = mError && (mError.data || mError.statusText) || 'something is wrong'
                 this.setState({
-                    createError: message
+                    btnLoading: false,
+                    createError: message,
                 });
                 this.notifyError({message});
             })
         } else {
             createSession(fields).then((res) => {
+                this.setState({
+                    btnLoading: false
+                })
                 swal("Record created successfully", {
                     icon: "success",
                 }).then(() => {
                     this.setState({
+                        btnLoading: false,
                         link: `${urlDomain}/${res}`
                     })
                 });
@@ -229,10 +239,12 @@ class SessionModal extends React.Component {
                         fieldsError.push(res[p])
                     })
                     this.setState({
+                        btnLoading: false,
                         createError: fieldsError[0]
                     })
                 } else {
                     this.setState({
+                        btnLoading: false,
                         createError: res
                     })
                     this.notifyError({message: res});
@@ -403,8 +415,9 @@ class SessionModal extends React.Component {
 
                 {!link ?
                 <Modal.Footer>
-                    <Button className="btn btn-success"
-                            onClick={this.handleSubmit}>{testData ? 'Update' : 'Save'}</Button>
+                    <Button type="primary" loading={this.state.btnLoading} onClick={this.handleSubmit}>
+                        {testData ? 'Update' : 'Save'}
+                    </Button>
                     <Button type="button" className="btn btn-secondary" onClick={onHandle}>Cancel</Button>
                 </Modal.Footer>:null}
             </Modal>
