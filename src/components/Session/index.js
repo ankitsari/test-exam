@@ -3,9 +3,11 @@ import swal from 'sweetalert'
 import {connect} from 'react-redux'
 import moment from 'moment'
 import {Table, notification} from 'antd'
+
 import {getSessionTestsList, getSourcesList, } from '../../Redux/actions/index'
 import {
     getExamStatusList,
+
     deleteSession,
     updateStatusMultiple,
     multipleDelete,
@@ -285,10 +287,13 @@ class Session extends Component {
                                 icon: "warning",
                             });
                         }
+                        selectedRowKeys.length = [];
+                        this.setState({
+                            selectedRowKeys
+                        })
                     }).catch((err) => {
                         console.log(err)
                     })
-
                 }
             });
         }

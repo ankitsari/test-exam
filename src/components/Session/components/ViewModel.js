@@ -10,7 +10,7 @@ import {notification} from 'antd'
 
 class ViewModel extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             loading: true,
             test: {},
@@ -65,14 +65,19 @@ class ViewModel extends React.Component {
         mywindow.document.write('<p>' + "Time Taken:" + "&emsp;" + test.timetaken + '</p>');
         mywindow.document.write('<p>' + "Source:" + "&emsp;" + test.source + '</p>');
         mywindow.document.write('<p>' + "Notes:" + "&emsp;" + test.notes + '</p>');
-        mywindow.document.write('<hr/>');
-        mywindow.document.write(document.getElementById("queNumber").innerHTML);
-        mywindow.document.write('<hr/>');
-        mywindow.document.write(document.getElementById("question").innerHTML);
-        mywindow.document.write('<hr/>');
-        mywindow.document.write(document.getElementById("ansNumber").innerHTML);
-        mywindow.document.write('<hr/>');
-        mywindow.document.write(document.getElementById("answer").innerHTML);
+
+        test && test.questionAndAnswerList.length && test.questionAndAnswerList.map((que, i) => {
+            let sir = i + 1;
+            mywindow.document.write('<hr/>');
+            mywindow.document.write('<p>' + "Question:" + "&nbsp;" + sir + '</p>')
+            mywindow.document.write('<hr/>');
+            mywindow.document.write('<p>' + que.question + '</p>');
+            mywindow.document.write('<hr/>');
+            mywindow.document.write('<p>' + "Answer:" + "&nbsp;" + sir + '</p>')
+            mywindow.document.write('<hr/>');
+            mywindow.document.write('<p>' + que.answer + '</p>')
+        });
+
         mywindow.document.write('</body></html>');
         mywindow.document.close();
         mywindow.focus();
@@ -100,7 +105,7 @@ class ViewModel extends React.Component {
                     Status: null,
                     // successMsg:"success update",
                     statusChangeError: ''
-                })
+                });
                 this.notifySuccess(res);
             }
         }).catch(err => {
@@ -109,7 +114,7 @@ class ViewModel extends React.Component {
                 successMsg:"",
                 // statusChangeError: resData,
                 Status:null
-            })
+            });
             this.notifyError(err);
         });
     };
@@ -278,18 +283,18 @@ class ViewModel extends React.Component {
                                     }
                                     {
                                         test && test.questionAndAnswerList && test.questionAndAnswerList.length ? test.questionAndAnswerList.map((answer, i) => (
-                                            <div key={i}>
-                                                <div className='row mb-3'>
+                                            <div key={i} className='panel panel-default'>
+                                                <div className='row mb-3 panel-heading ml-0 mr-0 pl-0'>
                                                     <div className='col-sm-3'>
-                                                        <label id="queNumber">Question {i+1}:</label>
+                                                        <label id={"question"+i}>Question {i+1}:</label>
                                                     </div>
-                                                    <div className='col-sm-9' id="question" style={{overflowX: 'auto', maxHeight: '380px'}} dangerouslySetInnerHTML={{ __html: answer.question }} />
+                                                    <div className='col-sm-9'  style={{overflowX: 'auto', maxHeight: '380px'}} dangerouslySetInnerHTML={{ __html: answer.question }} />
                                                 </div>
-                                                <div className='row'>
+                                                <div className='row mb-3 panel-body'>
                                                     <div className='col-sm-3'>
-                                                        <label id="ansNumber">Answer {i+1} :</label>
+                                                        <label id={i+1}>Answer {i+1} :</label>
                                                     </div>
-                                                    <div className='col-sm-9' id="answer" dangerouslySetInnerHTML={{ __html: answer.answer }} />
+                                                    <div className='col-sm-9'  dangerouslySetInnerHTML={{ __html: answer.answer }} />
                                                 </div>
                                             </div>
                                         )): null
