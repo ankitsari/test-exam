@@ -7,7 +7,7 @@ import {Table, notification} from 'antd'
 import {getSessionTestsList, getSourcesList, } from '../../Redux/actions/index'
 import {
     getExamStatusList,
-
+    filterListSession,
     deleteSession,
     updateStatusMultiple,
     multipleDelete,
@@ -51,8 +51,9 @@ class Session extends Component {
             sortList: false,
             where: {
                 sourceId: '',
-                hideFail: false,
-                hideHired: false,
+                hideFail: '',
+                hideHired: '',
+                hideRequestOnSite:''
             },
             selectedRowKeys: [],
             sortedInfo: {
@@ -63,18 +64,20 @@ class Session extends Component {
             isSessionModel:'',
             isSessionView:'',
             exam_id:'',
-
+            filterSession:'',
             testData: null,
+            selectedRows:[]
         }
     }
 
     async componentWillMount() {
-        try {
-            const [resTest, resSources, examStatusList, examList] = await Promise.all([
+           try {
+            let [resTest, resSources, examStatusList, examList, filterSession] = await Promise.all([
                 getTestsList(),
                 getSourceList(),
                 getExamStatusList(),
                 getExamsList(),
+                filterListSession({"CheckDefault":0}),
             ]);
             const testList = resTest && resTest.data || [];
             testList.forEach(test => {
@@ -83,6 +86,17 @@ class Session extends Component {
                 test.timeStampTimeTaken = test.timeStampTestEnd - test.timeStampTestStart;
                 test.key = test.id;
             });
+            const lstAdministration = filterSession && filterSession.lstAdministration || [];
+            lstAdministration.forEach(p => {
+                p.key = p.id;
+            })
+               if (!filterSession) {
+                   filterSession = {};
+               }
+               filterSession = {
+                   ...filterSession,
+                   lstAdministration: lstAdministration,
+               }
             this.setState({
                 filterList: testList,
                 sessionList: testList,
@@ -90,14 +104,22 @@ class Session extends Component {
                 examList: examList && examList.data.map(p => ({id: p.testId ,name: p.testTitle})) || [],
                 sources: resSources && resSources.data || [],
                 loading: false,
-            }, () => {
-                this.sessionFilter(null, null, false)
+                where: filterSession,
             })
         } catch (err) {
             this.notifyError(err);
             this.setState({
                 loading: false,
             })
+        }
+    }
+
+    afterInsertSuccess = async () =>{
+        try {
+            const res = await filterListSession({"CheckDefault":0});
+                this.setState({where:res});
+        } catch (err) {
+                this.notifyError(err)
         }
     }
 
@@ -109,8 +131,8 @@ class Session extends Component {
     };
 
     updateSession = (session) => {
-        let {sessionList, filterList} = this.state;
-       const newSessionList =  sessionList.map(p => {
+       let {lstAdministration} = this.state.where
+       const newSessionList = lstAdministration.length && lstAdministration.map(p => {
             if (p.id === session.id) {
                 return {
                     ...p,
@@ -118,72 +140,88 @@ class Session extends Component {
                 }
             }
             return p;
-        })
-        const newFilterList =  filterList.map(p => {
-            if (p.id === session.id) {
-                return {
-                    ...p,
-                    ...session,
-                }
-            }
-            return p;
-        })
+        }) || [];
+
         this.setState({
-            sessionList: newSessionList,
-            filterList: newFilterList
+            where:{
+                ...this.state.where,
+                lstAdministration:newSessionList
+            }
         })
     };
 
     onFilterChange = (e) => {
-        const name = e.target.name;
+        const {where} = this.state;
         const value = e.target.value;
         const checked = e.target.checked;
-        this.sessionFilter(name, value, checked);
+        const data = {
+            ...where,
+            [e.target.name]: e.target.type === "checkbox" ? checked : value
+        };
+        delete data.listOrder;
+        delete data.listSort;
+        delete data.lstAdministration;
+        filterListSession(data).then(res => {
+            this.setState({
+                where:res
+            })
+        }).catch(err => {
+            this.notifyError(err);
+        });
     };
 
-    sessionFilter = (name, value, checked) => {
-        const {sessionList, where} = this.state;
-        let filterList = sessionList.filter(p => {
-            const fromSource = name === 'sourceId' ? value : where.sourceId;
-            return !fromSource ? true : p.sourceId === parseInt(fromSource, 10);
-        });
-        const isHideFail = name === 'hideFail' ? checked : where.hideFail;
-        const isHideHired = name === 'hideHired' ? checked : where.hideHired;
-        let failId = this.state.examStatusList.filter(s => s.name === 'Fail');
-        failId = failId.length && failId[0].id;
-        let hiredId = this.state.examStatusList.filter(s => s.name === 'Hired');
-        hiredId = hiredId.length && hiredId[0].id;
-        filterList = filterList.filter(p => {
-            if (!isHideFail && !isHideHired) {
-                return (parseInt(p.examStatus, 10) === failId) || (parseInt(p.examStatus, 10) === hiredId);
-            } else if (isHideFail && !isHideHired) {
-                return (parseInt(p.examStatus, 10) === hiredId);
-            } else if (!isHideFail && isHideHired) {
-                return parseInt(p.examStatus, 10) === failId;
-            } else {
-                return (parseInt(p.examStatus, 10) !== failId) && (parseInt(p.examStatus, 10) !== hiredId)
-            }
-        });
-        if (name) {
-            this.setState({
-                filterList: filterList,
-                where: {
-                    ...where,
-                    [name]: name === 'sourceId' ? value : checked,
-                },
-                loading: false,
-            })
-        } else {
-            this.setState({
-                loading: false,
-                filterList: filterList,
-            })
-        }
-    }
+    // sessionFilter = (name, value, checked) => {
+    //     const {sessionList, where} = this.state;
+    //     let filterList = sessionList.filter(p => {
+    //         const fromSource = name === 'sourceId' ? value : where.sourceId;
+    //         return !fromSource ? true : p.sourceId === parseInt(fromSource, 10);
+    //     });
+    //     const isHideFail = name === 'hideFail' ? checked : where.hideFail;
+    //     const isHideHired = name === 'hideHired' ? checked : where.hideHired;
+    //     let failId = this.state.examStatusList.filter(s => s.name === 'Fail');
+    //     failId = failId.length && failId[0].id;
+    //     let hiredId = this.state.examStatusList.filter(s => s.name === 'Hired');
+    //     hiredId = hiredId.length && hiredId[0].id;
+    //     filterList = filterList.filter(p => {
+    //         if (!isHideFail && !isHideHired) {
+    //             return (parseInt(p.examStatus, 10) === failId) || (parseInt(p.examStatus, 10) === hiredId);
+    //         } else if (isHideFail && !isHideHired) {
+    //             return (parseInt(p.examStatus, 10) === hiredId);
+    //         } else if (!isHideFail && isHideHired) {
+    //             return parseInt(p.examStatus, 10) === failId;
+    //         } else {
+    //             return (parseInt(p.examStatus, 10) !== failId) && (parseInt(p.examStatus, 10) !== hiredId)
+    //         }
+    //     });
+    //     if (name) {
+    //         this.setState({
+    //             filterList: filterList,
+    //             where: {
+    //                 ...where,
+    //                 [name]: name === 'sourceId' ? value : checked,
+    //             },
+    //             loading: false,
+    //         })
+    //     } else {
+    //         this.setState({
+    //             loading: false,
+    //             filterList: filterList,
+    //         })
+    //     }
+    // }
+
+    notifySuccess = () => {
+        notification.success({
+            message: `Update status success`,
+            placement: 'topRight',
+        })
+    };
 
     onChange = (e) => {
-        let {selectedRowKeys, filterList, sessionList} = this.state;
-        let source = this.state.examStatusList.filter(s => s.id === parseInt(e.target.value, 10));
+        let {selectedRowKeys, filterList, sessionList, filterSession, examStatusList} = this.state;
+        let {lstAdministration} = this.state.where
+        console.log("filterSession",filterSession)
+        let source = examStatusList.filter(s => s.id === parseInt(e.target.value, 10));
         if (!source) {
             return;
         }
@@ -196,31 +234,35 @@ class Session extends Component {
             ids: ids,
             StatusId: value
         };
-
+        const self = this;
         updateStatusMultiple(statusChange).then(res => {
             if (res && res.isSuccess) {
-
-                filterList.forEach(exam => {
+                lstAdministration.forEach(exam => {
                     if (ids.indexOf(exam.id) !== -1) {
                         exam.examStatus = value
                     }
                 });
-                sessionList.forEach(exam => {
-                    if (ids.indexOf(exam.id) !== -1) {
-                        exam.examStatus = value
-                    }
-                });
-                this.setState({filterList, sessionList})
+                self.setState({
+                    where: {
+                        ...self.state.where,
+                        lstAdministration: lstAdministration,
+                    },
+                    selectedRowKeys: [],
+                })
+                this.notifySuccess();
             }
         }).catch(err => {
             this.setState({
                 statusChangeError: err.message,
             })
+            this.notifyError(err);
         });
     }
 
     onDelete = (sessionId) => {
         const {filterList, sessionList} = this.state;
+        const {lstAdministration} = this.state.where;
+        const self = this;
         if (sessionId) {
             swal({
                 title: "Are you sure?",
@@ -232,13 +274,15 @@ class Session extends Component {
                 if (status) {
                     deleteSession(sessionId).then((res) => {
                         if (res && res.isSuccess) {
-                            let filterListIndex = filterList.findIndex(x => x.id === sessionId);
-                            let sessionListIndex = sessionList.findIndex(x => x.id === sessionId);
-                            filterList.splice(filterListIndex, 1);
-                            sessionList.splice(sessionListIndex, 1);
+                            // let filterListIndex = filterList.findIndex(x => x.id === sessionId);
+                            let sessionListIndex = lstAdministration.findIndex(x => x.id === sessionId);
+                            // filterList.splice(filterListIndex, 1);
+                            lstAdministration.splice(sessionListIndex, 1);
                             this.setState({
-                                filterList,
-                                sessionList,
+                                where: {
+                                    ...self.state.where,
+                                    lstAdministration
+                                },
                             });
                             swal({
                                 title: 'Your session details has been deleted!',
@@ -259,7 +303,8 @@ class Session extends Component {
     };
 
     onMultipleDelete = () => {
-        let {selectedRowKeys, filterList, sessionList} = this.state;
+        let {selectedRowKeys, filterList, sessionList, selectedRows} = this.state;
+        const {lstAdministration} = this.state.where
         if (selectedRowKeys && selectedRowKeys.length) {
             swal({
                 title: "Are you sure?",
@@ -271,11 +316,14 @@ class Session extends Component {
                 if (status) {
                     multipleDelete(selectedRowKeys).then((res) => {
                         if (res && res.isSuccess) {
-                            let fList = filterList.filter(x => !selectedRowKeys.includes(x.id));
-                            let sList = sessionList.filter(x => !selectedRowKeys.includes(x.id));
+                            // let fList = filterList.filter(x => !selectedRowKeys.includes(x.id));
+                            let sList = lstAdministration.filter(x => !selectedRowKeys.includes(x.id));
                             this.setState({
-                                filterList: fList,
-                                sessionList: sList,
+                                selectedRowKeys: [],
+                                where: {
+                                    ...this.state.where,
+                                    lstAdministration: sList,
+                                }
                             });
                             swal({
                                 title: 'Your session details has been deleted!',
@@ -301,22 +349,21 @@ class Session extends Component {
 
     onChangeCheck = (selectedRowKeys, selectedRows) => {
         this.setState({
-            selectedRowKeys
+            selectedRowKeys: selectedRowKeys,
         })
-    }
-
+    };
 
     getCheckboxProps = record => ({
         disabled: record.name === 'Disabled User', // Column configuration not to be checked
         name: record.name,
-    })
+    });
 
     handleSortChange = (pagination, filters, sorter) => {
         this.setState({
             filteredInfo: filters,
             sortedInfo: sorter,
         });
-    }
+    };
 
     handleSessionModal = (test) => {
         if(test){
@@ -340,7 +387,7 @@ class Session extends Component {
     };
 
     render() {
-        const {filterList, where, examStatusList, selectedRowKeys, isSessionModel, sources, sessionList} = this.state;
+        const {filterList,filterSession, where, examStatusList, selectedRowKeys, isSessionModel, sources, sessionList} = this.state;
         const {examListError, sourcesListError} = this.props;
         let {sortedInfo, examStatusError, exam_id, isSessionView} = this.state;
         const rowSelection = {
@@ -447,7 +494,6 @@ class Session extends Component {
         if(sourcesListError) {
             finalError.push(sourcesListError)
         }
-
         return (
 
             <div className="administration">
@@ -489,22 +535,23 @@ class Session extends Component {
                                 <div className="form-group">
                                     <SourceInput className="form-control mb-2 ml-2 mr-sm-2 select-filter pointer select"
                                                  onChange={this.onFilterChange}
-                                                 value={where.sourceId}
+                                                 value={where.SourceId}
                                                  sources={this.state.sources}
-                                                 name="sourceId"
+                                                 name="SourceId"
                                     />
                                 </div>
 
                                 <div className="form-check mb-2 mr-sm-2">
                                     <input type="checkbox"
-                                           name="hideFail"
-                                           checked={where.hideFail}
+                                           name="hideFailed"
+                                           checked={where.hideFailed}
                                            onChange={this.onFilterChange}
                                            className="form-check-input pointer"/>
                                     <label className="form-check-label">
                                         Hide Fail
                                     </label>
                                 </div>
+
                                 <div className="form-check mb-2 mr-sm-2">
                                     <input type="checkbox"
                                            name="hideHired"
@@ -515,6 +562,18 @@ class Session extends Component {
                                         Hide Hired
                                     </label>
                                 </div>
+
+                                <div className="form-check mb-2 mr-sm-2">
+                                    <input type="checkbox"
+                                           name="hideRequestOnSite"
+                                           checked={where.hideRequestOnSite}
+                                           onChange={this.onFilterChange}
+                                           className="form-check-input pointer"/>
+                                    <label className="form-check-label">
+                                        Request On Site
+                                    </label>
+                                </div>
+
                             </form>
                         </div>
                     </div>
@@ -522,12 +581,13 @@ class Session extends Component {
                 </div>
                 <div className="clear"/>
                 {/*<span style={{color: "red"}}>{this.props.errorMsg.sessionTestsError}</span>*/}
-                <Table rowSelection={rowSelection} columns={columns} dataSource={filterList}
+                <Table rowSelection={rowSelection} columns={columns} dataSource={where.lstAdministration}
                        onChange={this.handleSortChange}/>
 
                 {isSessionModel && <SessionModal isOpen={isSessionModel}
                               onHandle={this.handleSessionModal}
                               updateSession={this.updateSession}
+                              afterInsertSuccess={this.afterInsertSuccess}
                               sessionList={sessionList}
                               examStatusList={examStatusList}
                               sources={this.state.sources}

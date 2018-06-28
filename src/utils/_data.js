@@ -169,6 +169,16 @@ export async function deleteSession(id) {
   return res.data;
 }
 
+export async function filterListSession(data) {
+    const url = utils.getURL(`/CreateSessionApi/FilterList`)
+    if(data){
+        const res = await axios.post(url, data, config());
+        return res.data;
+    }else{
+        const res = await axios.post(url, {}, config());
+        return res.data;
+    }
+}
 // Technical test
 
 export async function getExamDetail(examdetailId) {

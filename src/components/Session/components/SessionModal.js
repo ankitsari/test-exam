@@ -226,6 +226,9 @@ class SessionModal extends React.Component {
                 swal("Record created successfully", {
                     icon: "success",
                 }).then(() => {
+                    if(self.props){
+                        self.props.afterInsertSuccess()
+                    }
                     this.setState({
                         btnLoading: false,
                         link: `${urlDomain}/${res}`
@@ -256,7 +259,6 @@ class SessionModal extends React.Component {
     onQuestion = (e, queId) => {
         const { fields } = this.state;
         const answerItem = e.editor.getData();
-        debugger;
         fields.listQuestionAnswer && fields.listQuestionAnswer.length && fields.listQuestionAnswer.forEach((answer) => {
             if (answer.answerId === queId) {
                 answer.answer = answerItem

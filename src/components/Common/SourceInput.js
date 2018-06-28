@@ -6,7 +6,7 @@ const SourceInput = props => {
       <div>
             {/*<span style={{color:"red"}} >{examStatusError}</span>*/}
             <select className={className} onChange={onChange} value={value} name={name} data-id={data}>
-              <option value="">--Select--</option>
+              <option value="0">--Select--</option>
               {
                 sources && sources.length && sources.map((source) => (
                   <option key={source.id} data-id={data} value={source.id.toString()}>{source.name}</option>
