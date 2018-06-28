@@ -72,20 +72,13 @@ class Session extends Component {
 
     async componentWillMount() {
            try {
-            let [resTest, resSources, examStatusList, examList, filterSession] = await Promise.all([
-                getTestsList(),
+            let [resSources, examStatusList, examList, filterSession] = await Promise.all([
                 getSourceList(),
                 getExamStatusList(),
                 getExamsList(),
                 filterListSession({"CheckDefault":0}),
             ]);
-            const testList = resTest && resTest.data || [];
-            testList.forEach(test => {
-                test.timeStampTestStart = test.testStart ? moment(test.testStart).unix() : 0;
-                test.timeStampTestEnd = test.testEnd ? moment(test.testEnd).unix() : 0;
-                test.timeStampTimeTaken = test.timeStampTestEnd - test.timeStampTestStart;
-                test.key = test.id;
-            });
+
             const lstAdministration = filterSession && filterSession.lstAdministration || [];
             lstAdministration.forEach(p => {
                 p.key = p.id;
@@ -98,8 +91,7 @@ class Session extends Component {
                    lstAdministration: lstAdministration,
                }
             this.setState({
-                filterList: testList,
-                sessionList: testList,
+
                 examStatusList: examStatusList || [],
                 examList: examList && examList.data.map(p => ({id: p.testId ,name: p.testTitle})) || [],
                 sources: resSources && resSources.data || [],
@@ -170,45 +162,7 @@ class Session extends Component {
         });
     };
 
-    // sessionFilter = (name, value, checked) => {
-    //     const {sessionList, where} = this.state;
-    //     let filterList = sessionList.filter(p => {
-    //         const fromSource = name === 'sourceId' ? value : where.sourceId;
-    //         return !fromSource ? true : p.sourceId === parseInt(fromSource, 10);
-    //     });
-    //     const isHideFail = name === 'hideFail' ? checked : where.hideFail;
-    //     const isHideHired = name === 'hideHired' ? checked : where.hideHired;
-    //     let failId = this.state.examStatusList.filter(s => s.name === 'Fail');
-    //     failId = failId.length && failId[0].id;
-    //     let hiredId = this.state.examStatusList.filter(s => s.name === 'Hired');
-    //     hiredId = hiredId.length && hiredId[0].id;
-    //     filterList = filterList.filter(p => {
-    //         if (!isHideFail && !isHideHired) {
-    //             return (parseInt(p.examStatus, 10) === failId) || (parseInt(p.examStatus, 10) === hiredId);
-    //         } else if (isHideFail && !isHideHired) {
-    //             return (parseInt(p.examStatus, 10) === hiredId);
-    //         } else if (!isHideFail && isHideHired) {
-    //             return parseInt(p.examStatus, 10) === failId;
-    //         } else {
-    //             return (parseInt(p.examStatus, 10) !== failId) && (parseInt(p.examStatus, 10) !== hiredId)
-    //         }
-    //     });
-    //     if (name) {
-    //         this.setState({
-    //             filterList: filterList,
-    //             where: {
-    //                 ...where,
-    //                 [name]: name === 'sourceId' ? value : checked,
-    //             },
-    //             loading: false,
-    //         })
-    //     } else {
-    //         this.setState({
-    //             loading: false,
-    //             filterList: filterList,
-    //         })
-    //     }
-    // }
+
 
     notifySuccess = () => {
         notification.success({
@@ -218,9 +172,8 @@ class Session extends Component {
     };
 
     onChange = (e) => {
-        let {selectedRowKeys, filterList, sessionList, filterSession, examStatusList} = this.state;
-        let {lstAdministration} = this.state.where
-        console.log("filterSession",filterSession)
+        let {selectedRowKeys, examStatusList} = this.state;
+        let {lstAdministration} = this.state.where;
         let source = examStatusList.filter(s => s.id === parseInt(e.target.value, 10));
         if (!source) {
             return;
@@ -247,7 +200,6 @@ class Session extends Component {
                         ...self.state.where,
                         lstAdministration: lstAdministration,
                     },
-                    selectedRowKeys: [],
                 })
                 this.notifySuccess();
             }
@@ -260,7 +212,6 @@ class Session extends Component {
     }
 
     onDelete = (sessionId) => {
-        const {filterList, sessionList} = this.state;
         const {lstAdministration} = this.state.where;
         const self = this;
         if (sessionId) {
@@ -274,9 +225,7 @@ class Session extends Component {
                 if (status) {
                     deleteSession(sessionId).then((res) => {
                         if (res && res.isSuccess) {
-                            // let filterListIndex = filterList.findIndex(x => x.id === sessionId);
                             let sessionListIndex = lstAdministration.findIndex(x => x.id === sessionId);
-                            // filterList.splice(filterListIndex, 1);
                             lstAdministration.splice(sessionListIndex, 1);
                             this.setState({
                                 where: {
@@ -303,7 +252,7 @@ class Session extends Component {
     };
 
     onMultipleDelete = () => {
-        let {selectedRowKeys, filterList, sessionList, selectedRows} = this.state;
+        let {selectedRowKeys} = this.state;
         const {lstAdministration} = this.state.where
         if (selectedRowKeys && selectedRowKeys.length) {
             swal({
@@ -316,7 +265,6 @@ class Session extends Component {
                 if (status) {
                     multipleDelete(selectedRowKeys).then((res) => {
                         if (res && res.isSuccess) {
-                            // let fList = filterList.filter(x => !selectedRowKeys.includes(x.id));
                             let sList = lstAdministration.filter(x => !selectedRowKeys.includes(x.id));
                             this.setState({
                                 selectedRowKeys: [],
@@ -335,7 +283,7 @@ class Session extends Component {
                                 icon: "warning",
                             });
                         }
-                        selectedRowKeys.length = [];
+                        selectedRowKeys = [];
                         this.setState({
                             selectedRowKeys
                         })
@@ -347,7 +295,7 @@ class Session extends Component {
         }
     }
 
-    onChangeCheck = (selectedRowKeys, selectedRows) => {
+    onChangeCheck = (selectedRowKeys) => {
         this.setState({
             selectedRowKeys: selectedRowKeys,
         })
@@ -387,7 +335,7 @@ class Session extends Component {
     };
 
     render() {
-        const {filterList,filterSession, where, examStatusList, selectedRowKeys, isSessionModel, sources, sessionList} = this.state;
+        const {where, examStatusList, selectedRowKeys, isSessionModel} = this.state;
         const {examListError, sourcesListError} = this.props;
         let {sortedInfo, examStatusError, exam_id, isSessionView} = this.state;
         const rowSelection = {
@@ -588,7 +536,6 @@ class Session extends Component {
                               onHandle={this.handleSessionModal}
                               updateSession={this.updateSession}
                               afterInsertSuccess={this.afterInsertSuccess}
-                              sessionList={sessionList}
                               examStatusList={examStatusList}
                               sources={this.state.sources}
                               testData={this.state.testData}
