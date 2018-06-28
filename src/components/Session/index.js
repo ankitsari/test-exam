@@ -108,8 +108,19 @@ class Session extends Component {
 
     afterInsertSuccess = async () =>{
         try {
-            const res = await filterListSession({"CheckDefault":0});
-                this.setState({where:res});
+            let res = await filterListSession({"CheckDefault":0});
+            const lstAdministration = res && res.lstAdministration || [];
+            lstAdministration.forEach(p => {
+                p.key = p.id;
+            })
+            if (!res) {
+                res = {};
+            }
+            res = {
+                ...res,
+                lstAdministration: lstAdministration,
+            }
+            this.setState({where: res});
         } catch (err) {
                 this.notifyError(err)
         }
