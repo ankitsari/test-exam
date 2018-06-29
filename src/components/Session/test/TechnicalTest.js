@@ -16,6 +16,7 @@ class TechnicalTest extends Component {
           exam: {},
           errors: {},
           loading: true,
+          endExam:''
         }
     }
 
@@ -175,9 +176,9 @@ class TechnicalTest extends Component {
             swal("Thank You", {
                 icon: "success",
             }).then(() => {
-              _this.props.history.push({
-                pathname: '/'
-              });
+                this.setState({
+                    endExam:"Thank you"
+                })
             });
         }
       }).catch((err) => {
@@ -191,7 +192,7 @@ class TechnicalTest extends Component {
     };
 
     render() {
-        const { test, errors, warnMessage, errorMessage } = this.state;
+        const { test, errors, warnMessage, errorMessage, endExam } = this.state;
         const loading = (
           <Loader/>
         );
@@ -200,67 +201,78 @@ class TechnicalTest extends Component {
           return loading
         }
         return (
-            <div className="container technical-test">
-                <div className="text-left mt-3">
-                    <h2>Practical Test</h2>
-                </div>
-                <hr/>
-                {
-                    !warnMessage && !errorMessage &&
-                    <div className="test-content row mt-3">
-                        <form className="col-md-12 form-horizontal" >
-                            {test.questions && test.questions.length && test.questions.map((que, i) => (
-                                <div key={i} className="form-group">
+            <div>
+            {
+                endExam.length ? <div className="container technical-test">
+                        <div className="text-left mt-3">
+                            <h2>Thank you</h2>
+                        </div>
+                    </div>
+                    :
+                    <div className="container technical-test">
+                        <div className="text-left mt-3">
+                            <h2>Practical Test</h2>
+                        </div>
+                        <hr/>
+                        {
+                            !warnMessage && !errorMessage &&
+                            <div className="test-content row mt-3">
+                                <form className="col-md-12 form-horizontal">
+                                    {test.questions && test.questions.length && test.questions.map((que, i) => (
+                                        <div key={i} className="form-group">
                                 <span>
-                                    <label><b>Question {i+1}:</b></label>
+                                    <label><b>Question {i + 1}:</b></label>
                                     <ul>
-                                        <li id={que.id} dangerouslySetInnerHTML={{ __html: que.name }} />
+                                        <li id={que.id} dangerouslySetInnerHTML={{__html: que.name}}/>
                                     </ul>
                                 </span>
-                                    <label className="control-label mt-3"> <b>Copy and Paste your code:</b></label>
-                                    <textarea className="form-control"
-                                              name={que.id}
-                                              value={this.state[que.id] || ''}
-                                              onChange={this.onChange}
-                                              cols="20"
-                                              rows="6" />
-                                    {
-                                        errors && errors.listQuestionAnswer && errors.listQuestionAnswer.map(err => (
-                                            err[i] && <small key={i} className="text-danger"> {err[i]}</small>
-                                        ))
-                                    }
+                                            <label className="control-label mt-3"> <b>Copy and Paste your
+                                                code:</b></label>
+                                            <textarea className="form-control"
+                                                      name={que.id}
+                                                      value={this.state[que.id] || ''}
+                                                      onChange={this.onChange}
+                                                      cols="20"
+                                                      rows="6"/>
+                                            {
+                                                errors && errors.listQuestionAnswer && errors.listQuestionAnswer.map(err => (
+                                                    err[i] && <small key={i} className="text-danger"> {err[i]}</small>
+                                                ))
+                                            }
+                                        </div>
+                                    ))}
+                                </form>
+                                <div className="col-md-12">
+                                    <div className="form-group">
+                                        <label><b>Upload a zip file of your solution:</b></label>
+                                        <input type="file" style={{width: 'unset'}} className="form-control-file"
+                                               name="file" id="File" onChange={this.onChangeFile}/>
+                                        <small className="text-danger"> {errors.FileName}</small>
+                                    </div>
                                 </div>
-                            ))}
-                        </form>
-                        <div className="col-md-12">
-                            <div className="form-group">
-                                <label><b>Upload a zip file of your solution:</b></label>
-                                <input type="file" style={{width: 'unset'}} className="form-control-file" name="file" id="File" onChange={this.onChangeFile} />
-                                <small className="text-danger"> {errors.FileName}</small>
+                                <div className="col-md-12">
+                                    <div className="form-group actions text-right">
+                                        <Button type="primary" loading={this.state.btnLoading} onClick={this.onSubmit}>
+                                            Submit Test Response
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="col-md-12">
-                            <div className="form-group actions text-right">
-                                <Button type="primary" loading={this.state.btnLoading} onClick={this.onSubmit}>
-                                    Submit Test Response
-                                </Button>
+                        }
+                        {
+                            warnMessage &&
+                            <div className="mt-3 alert alert-warning">
+                                <strong>{warnMessage}</strong>
                             </div>
-                        </div>
+                        }
+                        {
+                            errorMessage &&
+                            <div className="mt-3 alert alert-danger">
+                                <strong>Error! {errorMessage}</strong>
+                            </div>
+                        }
                     </div>
-                }
-                {
-                    warnMessage &&
-                    <div className="mt-3 alert alert-warning">
-                        <strong>{warnMessage}</strong>
-                    </div>
-                }
-                {
-                    errorMessage &&
-                    <div className="mt-3 alert alert-danger">
-                        <strong>Error! {errorMessage}</strong>
-                    </div>
-                }
-
+            }
             </div>
         );
     }

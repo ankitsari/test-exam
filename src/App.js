@@ -50,6 +50,8 @@ class App extends Component {
               :
               <Switch>
                 <Route exact path="/login" component={Home}/>
+                <Route exact path="/ValidateToken/:token" component={TakeTest}/>
+                <Route exact path="/TechnicalTest/TestStart" component={TechnicalTest}/>
                 <Route path="*" render={() => <Redirect to="/login"/>}/>
               </Switch>
           }

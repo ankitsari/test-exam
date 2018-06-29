@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React from 'react';
 import TakeTestModal from './TakeTestModal'
 import { checkValidateToken } from "../../../utils/_data";
 import Loader from '../../Common/Loader'
 
-class TakeTest extends Component {
+class TakeTest extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -18,8 +18,14 @@ class TakeTest extends Component {
         const {params} = this.props.match;
         const token = params && params.token;
         if(token) {
+
             checkValidateToken(token).then((res) => {
-                if (res && res.firstName) {
+                if (res && res.examDetailId) {
+                    this.setState({
+                        user: res,
+                        loading: false,
+                    })
+                } else if (res && res === 'Test completed') {
                     this.setState({
                         user: res,
                         loading: false,
@@ -30,9 +36,9 @@ class TakeTest extends Component {
                         loading: false,
                     })
                 }
-
             }).catch(err => {
-                const message = err.response && err.response.data;
+                const mError = err.response;
+                const message = mError && (mError.data || mError.statusText) || 'please contact to administrator.';
                 if (message === 'Test completed') {
                     this.setState({
                         error: '',
@@ -58,7 +64,7 @@ class TakeTest extends Component {
         this.setState({
             modal: !this.state.modal
         })
-    }
+    };
     render() {
       const {modal, user, error, successMessage} = this.state;
       const loading = (

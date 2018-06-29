@@ -1,10 +1,13 @@
 import axios from 'axios'
 import utils from './index'
 
+const instance = axios.create();
+
 axios.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
   const originalRequest = error.config;
+
   if (error.response && error.response.status === 401 && !originalRequest._retry) {
 
     originalRequest._retry = true;
@@ -14,7 +17,7 @@ axios.interceptors.response.use(function (response) {
           localStorage.removeItem('exam-token');
           localStorage.removeItem('exam-refreshToken');
           localStorage.removeItem('exam-user');
-          window.location.href = '/';
+           window.location.href = '/';
           return;
 
       }
@@ -157,12 +160,6 @@ export async function updateSession(data) {
   return res.data;
 }
 
-export async function checkValidateToken(token) {
-  const url = utils.getURL(`/CreateSessionApi/ValidateToken/${token}`);
-  const res = await axios.get(url, config())
-  return res.data;
-}
-
 export async function deleteSession(id) {
   const url = utils.getURL(`/CreateSessionApi/delete/${id}`);
   const res = await axios.delete(url, config())
@@ -181,15 +178,24 @@ export async function filterListSession(data) {
 }
 // Technical test
 
+
+export async function checkValidateToken(token) {
+    //const url = utils.getURL(`/TechnicalTestApi/TestToken/${token}`);
+    const url = utils.getURL(`/CreateSessionApi/ValidateToken/${token}`);
+    const res = await instance.get(url, config());
+    return res.data;
+}
+
+
 export async function getExamDetail(examdetailId) {
   const url = utils.getURL(`/TechnicalTestApi/StartTest/${examdetailId}`);
-  const res = await axios.get(url, config())
+  const res = await axios.get(url)
   return res.data;
 }
 
 export async function submitTechnicalTest(data) {
   const url = utils.getURL(`/TechnicalTestApi/SubmitTest`);
-  const res = await axios.put(url, data, config())
+  const res = await axios.put(url, data)
   return res.data;
 }
 
