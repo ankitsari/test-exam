@@ -37,9 +37,9 @@ class ExamModal extends Component {
         </Modal.Header>
         <Modal.Body>
           <div className="form-horizontal">
-            <div className="form-group row">
-              <label className="col-md-3 col-form-label">Test Title</label>
-              <div className="col-md-9">
+            <div className="form-group row my-xl-0">
+              <label className="col-md-3 p-3 col-form-label">Test Title</label>
+              <div className="col-md-9 p-3">
                 <input type="text"
                        name="testTitle"
                        value={testTitle}
@@ -48,9 +48,9 @@ class ExamModal extends Component {
                 {testTitle.length <= 0 ? <small className="text-danger">{errors.testTitle}</small> : null}
               </div>
             </div>
-            <div className="form-group row">
-              <label className="col-md-3">Attachment Required</label>
-              <div className="col-md-9">
+            <div className="form-group row my-xl-0">
+              <label className="col-md-3 p-3">Attachment Required</label>
+              <div className="col-md-9 p-3">
                 <input type="checkbox"
                        name="isAttachmentRequired"
                        checked={isAttachmentRequired}
@@ -60,9 +60,9 @@ class ExamModal extends Component {
 
             {questions && questions.map((que, i) => {
               return (
-                <div className="form-group row" key={i}>
-                  <label className="col-md-3 ">Question {i + 1}</label>
-                  <div className="col-md-9">
+                <div className="form-group row my-xl-0" key={i} >
+                  <label className="col-md-3 p-3">Question {i + 1}</label>
+                  <div className="col-md-9 p-3" ref="editor1">
                     <CKEditor
                       activeClass="p10"
                       content={que.name}

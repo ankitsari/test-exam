@@ -180,8 +180,7 @@ export async function filterListSession(data) {
 
 
 export async function checkValidateToken(token) {
-    //const url = utils.getURL(`/TechnicalTestApi/TestToken/${token}`);
-    const url = utils.getURL(`/CreateSessionApi/ValidateToken/${token}`);
+    const url = utils.getURL(`/TechnicalTestApi/TestToken/${token}`);
     const res = await instance.get(url, config());
     return res.data;
 }
