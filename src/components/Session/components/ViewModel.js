@@ -208,6 +208,7 @@ class ViewModel extends React.Component {
                                                                  onChange={this.handleChange}
                                                                  sources={this.props.examStatusList}
                                                                  name="examStatus"
+                                                                 data={test.id}
                                                     />
                                             }
 
@@ -238,7 +239,7 @@ class ViewModel extends React.Component {
                                                 test.uniqueTestId ?
                                                     <div>
                                                         <input type="text" id="txtUrl" className="form-control"
-                                                               value={uniqueTestId}
+                                                               defaultValue={uniqueTestId}
                                                                style={{
                                                                    border: '1px dashed #999',
                                                                    borderRadius: 0,
@@ -294,7 +295,7 @@ class ViewModel extends React.Component {
                                                     <div className='col-sm-3'>
                                                         <label id={i+1}>Answer {i+1} :</label>
                                                     </div>
-                                                    <div className='col-sm-9'  dangerouslySetInnerHTML={{ __html: answer.answer }} />
+                                                    <div className='col-sm-9 text-justify'  dangerouslySetInnerHTML={{ __html: answer.answer }} />
                                                 </div>
                                             </div>
                                         )): null

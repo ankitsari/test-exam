@@ -136,13 +136,14 @@ class SessionModal extends React.Component {
                     return '';
                 }
             case 'source':
-                if (!value) {
+                if (!value || value === "0") {
                     return 'Source Field is Required';
                 } else {
                     return '';
                 }
+
             case 'testId':
-                if (!value) {
+                if (!value || value === "0") {
                     return 'Test Field is Required';
                 } else {
                     return '';
@@ -321,7 +322,8 @@ class SessionModal extends React.Component {
                                     <div className="col-md-9">
                                         <input type="text"
                                                name="lastName"
-                                               className="form-control" value={fields.lastName}
+                                               className="form-control"
+                                               value={fields.lastName}
                                                onChange={this.handleChange}/>
                                         <small className="error">{errors.lastName}</small>
                                     </div>
@@ -332,7 +334,8 @@ class SessionModal extends React.Component {
                                     <div className="col-md-9">
                                         <input type="text"
                                                name="email"
-                                           className="form-control" value={this.state.fields.email}
+                                               className="form-control"
+                                               value={this.state.fields.email}
                                                onChange={this.handleChange}/>
                                         <small className="error">{errors.email}</small>
                                     </div>
